@@ -1,16 +1,19 @@
 package cat.edealae.trobacar
 
+import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Build
 import android.os.IBinder
+import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 
 class LocationService : Service(), LocationListener {
@@ -32,11 +35,24 @@ class LocationService : Service(), LocationListener {
     }
 
     private fun startLocationUpdates() {
+        if (!hasLocationPermission()) {
+            // Sense permisos no podem continuar; esperarà a que l'Activity els demani de nou
+            return
+        }
+
         try {
             locationManager.requestLocationUpdates(
                 LocationManager.GPS_PROVIDER,
                 5000L, // Actualitzar cada 5 segons
                 10f,   // O cada 10 metres
+                this
+            )
+
+            // Fallback a xarxa per mantenir l'actualització quan el GPS no està disponible
+            locationManager.requestLocationUpdates(
+                LocationManager.NETWORK_PROVIDER,
+                5000L,
+                10f,
                 this
             )
         } catch (e: SecurityException) {
@@ -84,5 +100,35 @@ class LocationService : Service(), LocationListener {
     override fun onDestroy() {
         super.onDestroy()
         locationManager.removeUpdates(this)
+    }
+
+    override fun onTaskRemoved(rootIntent: Intent?) {
+        // Si el sistema tanca l'app en segon pla, intentar reiniciar el servei per mantenir-lo actiu
+        val restartIntent = Intent(applicationContext, LocationService::class.java).apply {
+            `package` = packageName
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            applicationContext.startForegroundService(restartIntent)
+        } else {
+            @Suppress("DEPRECATION")
+            applicationContext.startService(restartIntent)
+        }
+
+        super.onTaskRemoved(rootIntent)
+    }
+
+    private fun hasLocationPermission(): Boolean {
+        val fineGranted = ActivityCompat.checkSelfPermission(
+            this,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+
+        val coarseGranted = ActivityCompat.checkSelfPermission(
+            this,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+
+        return fineGranted || coarseGranted
     }
 }
