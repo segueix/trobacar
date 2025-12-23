@@ -1,0 +1,126 @@
+[
+    {
+        "merged": "cat.edealae.trobacar.app-merged_res-34:/drawable_card_background.xml.flat",
+        "source": "cat.edealae.trobacar.app-main-36:/drawable/card_background.xml"
+    },
+    {
+        "merged": "cat.edealae.trobacar.app-merged_res-34:/drawable_circle_frame_blue.xml.flat",
+        "source": "cat.edealae.trobacar.app-main-36:/drawable/circle_frame_blue.xml"
+    },
+    {
+        "merged": "cat.edealae.trobacar.app-merged_res-34:/drawable_ic_car.xml.flat",
+        "source": "cat.edealae.trobacar.app-main-36:/drawable/ic_car.xml"
+    },
+    {
+        "merged": "cat.edealae.trobacar.app-merged_res-34:/mipmap-xhdpi_ic_launcher.png.flat",
+        "source": "cat.edealae.trobacar.app-main-36:/mipmap-xhdpi/ic_launcher.png"
+    },
+    {
+        "merged": "cat.edealae.trobacar.app-merged_res-34:/mipmap-mdpi_ic_launcher_round.png.flat",
+        "source": "cat.edealae.trobacar.app-main-36:/mipmap-mdpi/ic_launcher_round.png"
+    },
+    {
+        "merged": "cat.edealae.trobacar.app-merged_res-34:/drawable_circle_frame_red.xml.flat",
+        "source": "cat.edealae.trobacar.app-main-36:/drawable/circle_frame_red.xml"
+    },
+    {
+        "merged": "cat.edealae.trobacar.app-merged_res-34:/drawable_ic_circle_red.xml.flat",
+        "source": "cat.edealae.trobacar.app-main-36:/drawable/ic_circle_red.xml"
+    },
+    {
+        "merged": "cat.edealae.trobacar.app-merged_res-34:/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
+        "source": "cat.edealae.trobacar.app-main-36:/mipmap-anydpi-v26/ic_launcher_round.xml"
+    },
+    {
+        "merged": "cat.edealae.trobacar.app-merged_res-34:/drawable_ic_location_pin.xml.flat",
+        "source": "cat.edealae.trobacar.app-main-36:/drawable/ic_location_pin.xml"
+    },
+    {
+        "merged": "cat.edealae.trobacar.app-merged_res-34:/drawable_circle_frame_green.xml.flat",
+        "source": "cat.edealae.trobacar.app-main-36:/drawable/circle_frame_green.xml"
+    },
+    {
+        "merged": "cat.edealae.trobacar.app-merged_res-34:/layout_activity_main.xml.flat",
+        "source": "cat.edealae.trobacar.app-main-36:/layout/activity_main.xml"
+    },
+    {
+        "merged": "cat.edealae.trobacar.app-merged_res-34:/drawable_ic_notification.xml.flat",
+        "source": "cat.edealae.trobacar.app-main-36:/drawable/ic_notification.xml"
+    },
+    {
+        "merged": "cat.edealae.trobacar.app-merged_res-34:/drawable_ic_circle_green.xml.flat",
+        "source": "cat.edealae.trobacar.app-main-36:/drawable/ic_circle_green.xml"
+    },
+    {
+        "merged": "cat.edealae.trobacar.app-merged_res-34:/mipmap-xxhdpi_ic_launcher_round.png.flat",
+        "source": "cat.edealae.trobacar.app-main-36:/mipmap-xxhdpi/ic_launcher_round.png"
+    },
+    {
+        "merged": "cat.edealae.trobacar.app-merged_res-34:/drawable_ic_share.xml.flat",
+        "source": "cat.edealae.trobacar.app-main-36:/drawable/ic_share.xml"
+    },
+    {
+        "merged": "cat.edealae.trobacar.app-merged_res-34:/layout_item_history.xml.flat",
+        "source": "cat.edealae.trobacar.app-main-36:/layout/item_history.xml"
+    },
+    {
+        "merged": "cat.edealae.trobacar.app-merged_res-34:/mipmap-xxxhdpi_ic_launcher.png.flat",
+        "source": "cat.edealae.trobacar.app-main-36:/mipmap-xxxhdpi/ic_launcher.png"
+    },
+    {
+        "merged": "cat.edealae.trobacar.app-merged_res-34:/mipmap-xxhdpi_ic_launcher.png.flat",
+        "source": "cat.edealae.trobacar.app-main-36:/mipmap-xxhdpi/ic_launcher.png"
+    },
+    {
+        "merged": "cat.edealae.trobacar.app-merged_res-34:/drawable_ic_arrow_right.xml.flat",
+        "source": "cat.edealae.trobacar.app-main-36:/drawable/ic_arrow_right.xml"
+    },
+    {
+        "merged": "cat.edealae.trobacar.app-merged_res-34:/mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "cat.edealae.trobacar.app-main-36:/mipmap-anydpi-v26/ic_launcher.xml"
+    },
+    {
+        "merged": "cat.edealae.trobacar.app-merged_res-34:/drawable_circle_frame_purple.xml.flat",
+        "source": "cat.edealae.trobacar.app-main-36:/drawable/circle_frame_purple.xml"
+    },
+    {
+        "merged": "cat.edealae.trobacar.app-merged_res-34:/mipmap-hdpi_ic_launcher_round.png.flat",
+        "source": "cat.edealae.trobacar.app-main-36:/mipmap-hdpi/ic_launcher_round.png"
+    },
+    {
+        "merged": "cat.edealae.trobacar.app-merged_res-34:/drawable_color_selector.xml.flat",
+        "source": "cat.edealae.trobacar.app-main-36:/drawable/color_selector.xml"
+    },
+    {
+        "merged": "cat.edealae.trobacar.app-merged_res-34:/drawable_ic_launcher_background.xml.flat",
+        "source": "cat.edealae.trobacar.app-main-36:/drawable/ic_launcher_background.xml"
+    },
+    {
+        "merged": "cat.edealae.trobacar.app-merged_res-34:/drawable_ic_launcher_foreground.xml.flat",
+        "source": "cat.edealae.trobacar.app-main-36:/drawable/ic_launcher_foreground.xml"
+    },
+    {
+        "merged": "cat.edealae.trobacar.app-merged_res-34:/drawable_ic_pin.xml.flat",
+        "source": "cat.edealae.trobacar.app-main-36:/drawable/ic_pin.xml"
+    },
+    {
+        "merged": "cat.edealae.trobacar.app-merged_res-34:/mipmap-mdpi_ic_launcher.png.flat",
+        "source": "cat.edealae.trobacar.app-main-36:/mipmap-mdpi/ic_launcher.png"
+    },
+    {
+        "merged": "cat.edealae.trobacar.app-merged_res-34:/mipmap-xhdpi_ic_launcher_round.png.flat",
+        "source": "cat.edealae.trobacar.app-main-36:/mipmap-xhdpi/ic_launcher_round.png"
+    },
+    {
+        "merged": "cat.edealae.trobacar.app-merged_res-34:/mipmap-hdpi_ic_launcher.png.flat",
+        "source": "cat.edealae.trobacar.app-main-36:/mipmap-hdpi/ic_launcher.png"
+    },
+    {
+        "merged": "cat.edealae.trobacar.app-merged_res-34:/mipmap-xxxhdpi_ic_launcher_round.png.flat",
+        "source": "cat.edealae.trobacar.app-main-36:/mipmap-xxxhdpi/ic_launcher_round.png"
+    },
+    {
+        "merged": "cat.edealae.trobacar.app-merged_res-34:/layout_activity_history.xml.flat",
+        "source": "cat.edealae.trobacar.app-main-36:/layout/activity_history.xml"
+    }
+]

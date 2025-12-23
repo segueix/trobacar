@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PinPark - Preview Millores Finals</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #e0e0e0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .phone {
+            width: 100%;
+            max-width: 400px;
+            height: 800px;
+            background: #f5f5f5;
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .phone.dark {
+            background: #121212;
+        }
+
+        /* Header */
+        .header {
+            background: #1976D2;
+            padding: 48px 24px 24px;
+            text-align: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .logo-icon {
+            font-size: 32px;
+        }
+
+        .logo-text {
+            font-size: 36px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .subtitle {
+            color: #E0F2FE;
+            font-size: 16px;
+        }
+
+        /* Indicadors */
+        .indicators {
+            background: white;
+            margin: -16px 24px 16px;
+            border-radius: 16px;
+            padding: 16px;
+            display: flex;
+            gap: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .phone.dark .indicators {
+            background: #2c2c2c;
+        }
+
+        .indicator {
+            flex: 1;
+            text-align: center;
+        }
+
+        .indicator-icon {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 8px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .indicator-icon.gps {
+            background: #4CAF50;
+        }
+
+        .indicator-icon.car {
+            background: #E53935;
+        }
+
+        .indicator-label {
+            font-size: 12px;
+            font-weight: bold;
+            color: #757575;
+        }
+
+        .phone.dark .indicator-label {
+            color: #b0b0b0;
+        }
+
+        .separator {
+            width: 1px;
+            background: #e0e0e0;
+        }
+
+        .phone.dark .separator {
+            background: #444;
+        }
+
+        /* Location Card */
+        .location-card {
+            background: white;
+            margin: 0 24px 16px;
+            border-radius: 20px;
+            padding: 24px;
+            text-align: center;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+        }
+
+        .phone.dark .location-card {
+            background: #1e1e1e;
+        }
+
+        .location-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+            opacity: 0.8;
+        }
+
+        .location-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #212121;
+            margin-bottom: 8px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+
+        .location-title:hover {
+            background: rgba(0,0,0,0.05);
+        }
+
+        .phone.dark .location-title {
+            color: #ffffff;
+        }
+
+        .phone.dark .location-title:hover {
+            background: rgba(255,255,255,0.05);
+        }
+
+        .location-title .edit-icon {
+            opacity: 0;
+            font-size: 16px;
+            margin-left: 8px;
+            transition: opacity 0.2s;
+        }
+
+        .location-title:hover .edit-icon {
+            opacity: 1;
+        }
+
+        .location-coords {
+            font-size: 14px;
+            color: #757575;
+            font-family: monospace;
+            margin-bottom: 16px;
+        }
+
+        .phone.dark .location-coords {
+            color: #b0b0b0;
+        }
+
+        /* Botó obrir mapa */
+        .open-map-button {
+            background: #1976D2;
+            color: white;
+            border: none;
+            padding: 16px 24px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(25, 118, 210, 0.3);
+        }
+
+        .open-map-button:hover {
+            background: #1565C0;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(25, 118, 210, 0.4);
+        }
+
+        .open-map-button:active {
+            transform: translateY(0);
+        }
+
+        .share-icon {
+            font-size: 20px;
+        }
+
+        /* History Button */
+        .history-button {
+            background: white;
+            margin: 0 24px 24px;
+            border-radius: 16px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: all 0.2s;
+        }
+
+        .phone.dark .history-button {
+            background: #1e1e1e;
+        }
+
+        .history-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .history-button-icon {
+            width: 40px;
+            height: 40px;
+            background: #FFF3E0;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .phone.dark .history-button-icon {
+            background: rgba(255, 152, 0, 0.2);
+        }
+
+        .history-button-text {
+            flex: 1;
+        }
+
+        .history-button-text h3 {
+            font-size: 16px;
+            font-weight: bold;
+            color: #212121;
+            margin-bottom: 2px;
+        }
+
+        .phone.dark .history-button-text h3 {
+            color: #ffffff;
+        }
+
+        .history-button-text p {
+            font-size: 12px;
+            color: #757575;
+        }
+
+        .phone.dark .history-button-text p {
+            color: #b0b0b0;
+        }
+
+        .arrow {
+            color: #9e9e9e;
+            font-size: 20px;
+        }
+
+        /* HISTORIAL SCREEN */
+        .top-bar {
+            background: #f5f5f5;
+            padding: 16px;
+        }
+
+        .phone.dark .top-bar {
+            background: #121212;
+        }
+
+        .top-bar h1 {
+            font-size: 20px;
+            font-weight: bold;
+            color: #212121;
+        }
+
+        .phone.dark .top-bar h1 {
+            color: #ffffff;
+        }
+
+        .color-bar {
+            background: #1976D2;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .color-selector {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .color-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.2s;
+            border: 3px solid #ffffff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .color-circle:hover {
+            transform: scale(1.1);
+        }
+
+        .color-circle.blue { background: #1976D2; }
+        .color-circle.green { background: #43A047; }
+        .color-circle.red { background: #E53935; }
+        .color-circle.purple { background: #8E24AA; }
+
+        .dark-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dark-toggle span {
+            color: white;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .switch {
+            position: relative;
+            width: 48px;
+            height: 28px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 14px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .switch-thumb {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .content {
+            padding: 8px;
+            height: calc(100% - 170px);
+            overflow-y: auto;
+        }
+
+        /* History Item amb paperera i nom editable */
+        .history-item {
+            background: white;
+            border-radius: 16px;
+            padding: 16px;
+            margin: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .phone.dark .history-item {
+            background: #1e1e1e;
+        }
+
+        .history-item:hover {
+            transform: translateX(-8px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .history-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .history-icon.bluetooth {
+            background: #E3F2FD;
+        }
+
+        .phone.dark .history-icon.bluetooth {
+            background: rgba(66, 165, 245, 0.2);
+        }
+
+        .history-icon.activity {
+            background: #FFF3E0;
+        }
+
+        .phone.dark .history-icon.activity {
+            background: rgba(255, 152, 0, 0.2);
+        }
+
+        .car-badge {
+            position: absolute;
+            bottom: -4px;
+            right: -4px;
+            width: 16px;
+            height: 16px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+        }
+
+        .phone.dark .car-badge {
+            background: #1e1e1e;
+        }
+
+        .history-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .history-name {
+            font-size: 16px;
+            font-weight: bold;
+            color: #212121;
+            margin-bottom: 4px;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 6px;
+            transition: background 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .history-name:hover {
+            background: rgba(0,0,0,0.05);
+        }
+
+        .phone.dark .history-name {
+            color: #ffffff;
+        }
+
+        .phone.dark .history-name:hover {
+            background: rgba(255,255,255,0.05);
+        }
+
+        .history-name .edit-icon-small {
+            opacity: 0;
+            font-size: 14px;
+            transition: opacity 0.2s;
+        }
+
+        .history-name:hover .edit-icon-small {
+            opacity: 1;
+        }
+
+        .history-date {
+            font-size: 14px;
+            color: #757575;
+            margin-bottom: 4px;
+        }
+
+        .phone.dark .history-date {
+            color: #b0b0b0;
+        }
+
+        .history-coords {
+            font-size: 11px;
+            color: #9e9e9e;
+            font-family: monospace;
+        }
+
+        .phone.dark .history-coords {
+            color: #757575;
+        }
+
+        /* Botó paperera */
+        .delete-item-button {
+            width: 40px;
+            height: 40px;
+            background: #FFEBEE;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex-shrink: 0;
+            opacity: 0;
+        }
+
+        .phone.dark .delete-item-button {
+            background: rgba(229, 57, 53, 0.2);
+        }
+
+        .history-item:hover .delete-item-button {
+            opacity: 1;
+        }
+
+        .delete-item-button:hover {
+            background: #E53935;
+            transform: scale(1.1);
+        }
+
+        .delete-item-button:hover .trash-icon {
+            filter: brightness(0) invert(1);
+        }
+
+        .trash-icon {
+            font-size: 20px;
+            color: #E53935;
+            transition: all 0.2s;
+        }
+
+        .delete-button {
+            padding: 20px;
+            text-align: center;
+            color: #E53935;
+            font-weight: bold;
+            cursor: pointer;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .phone.dark .delete-button {
+            border-top-color: #333;
+        }
+
+        /* Modal d'edició */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 24px;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+        }
+
+        .phone.dark .modal-content {
+            background: #1e1e1e;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #212121;
+            margin-bottom: 16px;
+        }
+
+        .phone.dark .modal-title {
+            color: #ffffff;
+        }
+
+        .modal-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-bottom: 16px;
+            background: white;
+            color: #212121;
+        }
+
+        .phone.dark .modal-input {
+            background: #2c2c2c;
+            color: #ffffff;
+            border-color: #444;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .modal-button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .modal-button.cancel {
+            background: #f5f5f5;
+            color: #212121;
+        }
+
+        .phone.dark .modal-button.cancel {
+            background: #2c2c2c;
+            color: #ffffff;
+        }
+
+        .modal-button.save {
+            background: #1976D2;
+            color: white;
+        }
+
+        .modal-button:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Toggle screen */
+        .screen-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 12px 24px;
+            border-radius: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            cursor: pointer;
+            font-weight: 500;
+            z-index: 100;
+        }
+
+        .labels {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+        }
+
+        .label {
+            background: white;
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="labels">
+        <div class="label">📍 Pantalla Principal</div>
+        <div class="label">📋 Historial</div>
+    </div>
+
+    <div class="screen-toggle" onclick="toggleDarkMode()">
+        🌓 Mode Fosc
+    </div>
+
+    <!-- PANTALLA PRINCIPAL -->
+    <div class="phone" id="phone1">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">
+                <span class="logo-icon">📍</span>
+                <span class="logo-text">PinPark</span>
+            </div>
+            <div class="subtitle">Troba el teu cotxe a l'instant</div>
+        </div>
+
+        <!-- Indicadors -->
+        <div class="indicators">
+            <div class="indicator">
+                <div class="indicator-icon gps">🟢</div>
+                <div class="indicator-label">GPS</div>
+            </div>
+            <div class="separator"></div>
+            <div class="indicator">
+                <div class="indicator-icon car">🔴</div>
+                <div class="indicator-label">Cotxe</div>
+            </div>
+        </div>
+
+        <!-- Location Card -->
+        <div class="location-card">
+            <div class="location-icon">🚗</div>
+            <div class="location-title" onclick="editMainLocation()">
+                Supermercat Mercadona
+                <span class="edit-icon">✏️</span>
+            </div>
+            <div class="location-coords">
+                Lat: 41.682949<br>
+                Lon: 2.287196
+            </div>
+            
+            <!-- BOTÓ OBRIR MAPA AMB ICONA COMPARTIR -->
+            <button class="open-map-button" onclick="openMap()">
+                <span class="share-icon">↗️</span>
+                Obrir al mapa
+            </button>
+        </div>
+
+        <!-- History Button -->
+        <div class="history-button">
+            <div class="history-button-icon">📋</div>
+            <div class="history-button-text">
+                <h3>Historial d'ubicacions</h3>
+                <p>Veure aparcaments anteriors</p>
+            </div>
+            <div class="arrow">›</div>
+        </div>
+    </div>
+
+    <!-- PANTALLA HISTORIAL -->
+    <div class="phone" id="phone2">
+        <!-- Header -->
+        <div class="top-bar">
+            <h1>Historial</h1>
+        </div>
+
+        <!-- Color Bar -->
+        <div class="color-bar">
+            <div class="color-selector">
+                <div class="color-circle blue"></div>
+                <div class="color-circle green"></div>
+                <div class="color-circle red"></div>
+                <div class="color-circle purple"></div>
+            </div>
+            <div class="dark-toggle">
+                <span>Fosc</span>
+                <div class="switch">
+                    <div class="switch-thumb"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content amb papereres -->
+        <div class="content">
+            <div class="history-item">
+                <div class="history-icon activity">
+                    🚶
+                    <div class="car-badge">🚗</div>
+                </div>
+                <div class="history-info">
+                    <div class="history-name" onclick="editHistoryLocation(this, 'Activity - 16:16')">
+                        Parc Central
+                        <span class="edit-icon-small">✏️</span>
+                    </div>
+                    <div class="history-date">Dec 19, 2025 - 16:16</div>
+                    <div class="history-coords">• 41.682947 • 2.287196</div>
+                </div>
+                <div class="delete-item-button" onclick="deleteItem(this)">
+                    <span class="trash-icon">🗑️</span>
+                </div>
+            </div>
+
+            <div class="history-item">
+                <div class="history-icon bluetooth">
+                    🔵
+                    <div class="car-badge">🚗</div>
+                </div>
+                <div class="history-info">
+                    <div class="history-name" onclick="editHistoryLocation(this, 'Bluetooth - 16:15')">
+                        Casa de Maria
+                        <span class="edit-icon-small">✏️</span>
+                    </div>
+                    <div class="history-date">Dec 19, 2025 - 16:15</div>
+                    <div class="history-coords">• 41.682950 • 2.287327</div>
+                </div>
+                <div class="delete-item-button" onclick="deleteItem(this)">
+                    <span class="trash-icon">🗑️</span>
+                </div>
+            </div>
+
+            <div class="history-item">
+                <div class="history-icon bluetooth">
+                    🔵
+                    <div class="car-badge">🚗</div>
+                </div>
+                <div class="history-info">
+                    <div class="history-name" onclick="editHistoryLocation(this, 'Bluetooth - 16:15')">
+                        Oficina
+                        <span class="edit-icon-small">✏️</span>
+                    </div>
+                    <div class="history-date">Dec 19, 2025 - 16:15</div>
+                    <div class="history-coords">• 41.682943 • 2.287330</div>
+                </div>
+                <div class="delete-item-button" onclick="deleteItem(this)">
+                    <span class="trash-icon">🗑️</span>
+                </div>
+            </div>
+
+            <div class="history-item">
+                <div class="history-icon activity">
+                    🚶
+                    <div class="car-badge">🚗</div>
+                </div>
+                <div class="history-info">
+                    <div class="history-name" onclick="editHistoryLocation(this, 'Activity - 15:26')">
+                        Supermercat
+                        <span class="edit-icon-small">✏️</span>
+                    </div>
+                    <div class="history-date">Dec 19, 2025 - 15:26</div>
+                    <div class="history-coords">• 41.684527 • 2.286596</div>
+                </div>
+                <div class="delete-item-button" onclick="deleteItem(this)">
+                    <span class="trash-icon">🗑️</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Delete all -->
+        <div class="delete-button">
+            🗑️ Esborrar tot l'historial
+        </div>
+    </div>
+
+    <!-- Modal d'edició -->
+    <div class="modal" id="editModal">
+        <div class="modal-content">
+            <div class="modal-title">Editar nom</div>
+            <input type="text" class="modal-input" id="editInput" placeholder="Introdueix un nom...">
+            <div class="modal-buttons">
+                <button class="modal-button cancel" onclick="closeModal()">Cancel·lar</button>
+                <button class="modal-button save" onclick="saveName()">Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentEditElement = null;
+        let currentDefaultName = '';
+
+        function toggleDarkMode() {
+            document.getElementById('phone1').classList.toggle('dark');
+            document.getElementById('phone2').classList.toggle('dark');
+        }
+
+        function openMap() {
+            alert('S\'obrirà amb l\'app de mapes per defecte! 🗺️\n(Google Maps, Waze, etc.)');
+        }
+
+        function editMainLocation() {
+            currentEditElement = document.querySelector('.location-title');
+            currentDefaultName = 'Ubicació guardada';
+            const currentName = currentEditElement.textContent.trim().replace('✏️', '').trim();
+            
+            document.getElementById('editInput').value = currentName;
+            document.getElementById('editModal').classList.add('active');
+            document.getElementById('editInput').focus();
+        }
+
+        function editHistoryLocation(element, defaultName) {
+            currentEditElement = element;
+            currentDefaultName = defaultName;
+            const currentName = element.textContent.trim().replace('✏️', '').trim();
+            
+            document.getElementById('editInput').value = currentName;
+            document.getElementById('editModal').classList.add('active');
+            document.getElementById('editInput').focus();
+        }
+
+        function closeModal() {
+            document.getElementById('editModal').classList.remove('active');
+            currentEditElement = null;
+        }
+
+        function saveName() {
+            const newName = document.getElementById('editInput').value.trim();
+            if (newName && currentEditElement) {
+                currentEditElement.innerHTML = newName + ' <span class="edit-icon-small">✏️</span>';
+                if (currentEditElement.classList.contains('location-title')) {
+                    currentEditElement.innerHTML = newName + ' <span class="edit-icon">✏️</span>';
+                }
+                alert(`✅ Nom guardat: "${newName}"`);
+            }
+            closeModal();
+        }
+
+        function deleteItem(button) {
+            if (confirm('Vols esborrar aquesta ubicació?')) {
+                const item = button.closest('.history-item');
+                item.style.transition = 'all 0.3s';
+                item.style.opacity = '0';
+                item.style.transform = 'translateX(100%)';
+                setTimeout(() => item.remove(), 300);
+            }
+        }
+
+        // Enter per guardar
+        document.getElementById('editInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') saveName();
+        });
+
+        // Esc per tancar
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
+        });
+
+        // Tancar modal clickant fora
+        document.getElementById('editModal').addEventListener('click', (e) => {
+            if (e.target.id === 'editModal') closeModal();
+        });
+    </script>
+</body>
+</html>

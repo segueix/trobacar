@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Colors principals -->
+    <color name="primary_blue">#1976D2</color>
+    <color name="primary_blue_dark">#0D47A1</color>
+    <color name="primary_blue_light">#42A5F5</color>
+    
+    <color name="primary_green">#43A047</color>
+    <color name="primary_green_dark">#2E7D32</color>
+    <color name="primary_green_light">#66BB6A</color>
+    
+    <color name="primary_red">#E53935</color>
+    <color name="primary_red_dark">#C62828</color>
+    <color name="primary_red_light">#EF5350</color>
+    
+    <color name="primary_purple">#8E24AA</color>
+    <color name="primary_purple_dark">#6A1B9A</color>
+    <color name="primary_purple_light">#AB47BC</color>
+    
+    <!-- Colors funcionals -->
+    <color name="green">#4CAF50</color>
+    <color name="red">#F44336</color>
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    
+    <!-- Mode clar -->
+    <color name="background_light">#F5F5F5</color>
+    <color name="surface_light">#FFFFFF</color>
+    <color name="surface_elevated_light">#FFFFFF</color>
+    <color name="text_primary_light">#212121</color>
+    <color name="text_secondary_light">#757575</color>
+    <color name="text_hint_light">#9E9E9E</color>
+    
+    <!-- Mode fosc -->
+    <color name="background_dark">#121212</color>
+    <color name="surface_dark">#1E1E1E</color>
+    <color name="surface_elevated_dark">#2C2C2C</color>
+    <color name="text_primary_dark">#FFFFFF</color>
+    <color name="text_secondary_dark">#B0B0B0</color>
+    <color name="text_hint_dark">#757575</color>
+</resources>

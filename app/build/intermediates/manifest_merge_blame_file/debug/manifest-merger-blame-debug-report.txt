@@ -1,0 +1,257 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="cat.edealae.trobacar"
+4    android:versionCode="1"
+5    android:versionName="1.0" >
+6
+7    <uses-sdk
+8        android:minSdkVersion="24"
+9        android:targetSdkVersion="34" />
+10
+11    <!-- Permisos necessaris -->
+12    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+12-->/home/danielmasdexaxars/TrobaCar v14/app/src/main/AndroidManifest.xml:6:5-79
+12-->/home/danielmasdexaxars/TrobaCar v14/app/src/main/AndroidManifest.xml:6:22-76
+13    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+13-->/home/danielmasdexaxars/TrobaCar v14/app/src/main/AndroidManifest.xml:7:5-81
+13-->/home/danielmasdexaxars/TrobaCar v14/app/src/main/AndroidManifest.xml:7:22-78
+14    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+14-->/home/danielmasdexaxars/TrobaCar v14/app/src/main/AndroidManifest.xml:8:5-77
+14-->/home/danielmasdexaxars/TrobaCar v14/app/src/main/AndroidManifest.xml:8:22-74
+15    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
+15-->/home/danielmasdexaxars/TrobaCar v14/app/src/main/AndroidManifest.xml:9:5-86
+15-->/home/danielmasdexaxars/TrobaCar v14/app/src/main/AndroidManifest.xml:9:22-83
+16    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+16-->/home/danielmasdexaxars/TrobaCar v14/app/src/main/AndroidManifest.xml:10:5-77
+16-->/home/danielmasdexaxars/TrobaCar v14/app/src/main/AndroidManifest.xml:10:22-74
+17    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+17-->/home/danielmasdexaxars/TrobaCar v14/app/src/main/AndroidManifest.xml:11:5-81
+17-->/home/danielmasdexaxars/TrobaCar v14/app/src/main/AndroidManifest.xml:11:22-78
+18
+19    <!-- Permisos Bluetooth -->
+20    <uses-permission android:name="android.permission.BLUETOOTH" />
+20-->/home/danielmasdexaxars/TrobaCar v14/app/src/main/AndroidManifest.xml:14:5-68
+20-->/home/danielmasdexaxars/TrobaCar v14/app/src/main/AndroidManifest.xml:14:22-65
+21    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+21-->/home/danielmasdexaxars/TrobaCar v14/app/src/main/AndroidManifest.xml:15:5-74
+21-->/home/danielmasdexaxars/TrobaCar v14/app/src/main/AndroidManifest.xml:15:22-71
+22    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+22-->/home/danielmasdexaxars/TrobaCar v14/app/src/main/AndroidManifest.xml:16:5-76
+22-->/home/danielmasdexaxars/TrobaCar v14/app/src/main/AndroidManifest.xml:16:22-73
+23
+24    <!-- Permís Activity Recognition -->
+25    <uses-permission android:name="com.google.android.gms.permission.ACTIVITY_RECOGNITION" />
+25-->/home/danielmasdexaxars/TrobaCar v14/app/src/main/AndroidManifest.xml:19:5-94
+25-->/home/danielmasdexaxars/TrobaCar v14/app/src/main/AndroidManifest.xml:19:22-91
+26    <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
+26-->/home/danielmasdexaxars/TrobaCar v14/app/src/main/AndroidManifest.xml:20:5-79
+26-->/home/danielmasdexaxars/TrobaCar v14/app/src/main/AndroidManifest.xml:20:22-76
+27
+28    <permission
+28-->[androidx.core:core:1.12.0] /home/danielmasdexaxars/.gradle/caches/9.0-milestone-1/transforms/102bb4ca6e8b3e009636483291d8df3f/transformed/core-1.12.0/AndroidManifest.xml:22:5-24:47
+29        android:name="cat.edealae.trobacar.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+29-->[androidx.core:core:1.12.0] /home/danielmasdexaxars/.gradle/caches/9.0-milestone-1/transforms/102bb4ca6e8b3e009636483291d8df3f/transformed/core-1.12.0/AndroidManifest.xml:23:9-81
+30        android:protectionLevel="signature" />
+30-->[androidx.core:core:1.12.0] /home/danielmasdexaxars/.gradle/caches/9.0-milestone-1/transforms/102bb4ca6e8b3e009636483291d8df3f/transformed/core-1.12.0/AndroidManifest.xml:24:9-44
+31
+32    <uses-permission android:name="cat.edealae.trobacar.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+32-->[androidx.core:core:1.12.0] /home/danielmasdexaxars/.gradle/caches/9.0-milestone-1/transforms/102bb4ca6e8b3e009636483291d8df3f/transformed/core-1.12.0/AndroidManifest.xml:26:5-97
+32-->[androidx.core:core:1.12.0] /home/danielmasdexaxars/.gradle/caches/9.0-milestone-1/transforms/102bb4ca6e8b3e009636483291d8df3f/transformed/core-1.12.0/AndroidManifest.xml:26:22-94
+33
+34    <application
+34-->/home/danielmasdexaxars/TrobaCar v14/app/src/main/AndroidManifest.xml:22:5-84:19
+35        android:allowBackup="true"
+35-->/home/danielmasdexaxars/TrobaCar v14/app/src/main/AndroidManifest.xml:23:9-35
+36        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+36-->[androidx.core:core:1.12.0] /home/danielmasdexaxars/.gradle/caches/9.0-milestone-1/transforms/102bb4ca6e8b3e009636483291d8df3f/transformed/core-1.12.0/AndroidManifest.xml:28:18-86
+37        android:debuggable="true"
+38        android:extractNativeLibs="false"
+39        android:icon="@mipmap/ic_launcher"
+39-->/home/danielmasdexaxars/TrobaCar v14/app/src/main/AndroidManifest.xml:24:9-43
+40        android:label="@string/app_name"
+40-->/home/danielmasdexaxars/TrobaCar v14/app/src/main/AndroidManifest.xml:25:9-41
+41        android:roundIcon="@mipmap/ic_launcher_round"
+41-->/home/danielmasdexaxars/TrobaCar v14/app/src/main/AndroidManifest.xml:26:9-54
+42        android:supportsRtl="true"
+42-->/home/danielmasdexaxars/TrobaCar v14/app/src/main/AndroidManifest.xml:27:9-35
+43        android:testOnly="true"
+44        android:theme="@style/Theme.TrobaCar" >
+44-->/home/danielmasdexaxars/TrobaCar v14/app/src/main/AndroidManifest.xml:28:9-46
+45        <activity
+45-->/home/danielmasdexaxars/TrobaCar v14/app/src/main/AndroidManifest.xml:30:9-37:20
+46            android:name="cat.edealae.trobacar.MainActivity"
+46-->/home/danielmasdexaxars/TrobaCar v14/app/src/main/AndroidManifest.xml:31:13-41
+47            android:exported="true" >
+47-->/home/danielmasdexaxars/TrobaCar v14/app/src/main/AndroidManifest.xml:32:13-36
+48            <intent-filter>
+48-->/home/danielmasdexaxars/TrobaCar v14/app/src/main/AndroidManifest.xml:33:13-36:29
+49                <action android:name="android.intent.action.MAIN" />
+49-->/home/danielmasdexaxars/TrobaCar v14/app/src/main/AndroidManifest.xml:34:17-69
+49-->/home/danielmasdexaxars/TrobaCar v14/app/src/main/AndroidManifest.xml:34:25-66
+50
+51                <category android:name="android.intent.category.LAUNCHER" />
+51-->/home/danielmasdexaxars/TrobaCar v14/app/src/main/AndroidManifest.xml:35:17-77
+51-->/home/danielmasdexaxars/TrobaCar v14/app/src/main/AndroidManifest.xml:35:27-74
+52            </intent-filter>
+53        </activity>
+54        <activity
+54-->/home/danielmasdexaxars/TrobaCar v14/app/src/main/AndroidManifest.xml:39:9-42:58
+55            android:name="cat.edealae.trobacar.HistoryActivity"
+55-->/home/danielmasdexaxars/TrobaCar v14/app/src/main/AndroidManifest.xml:40:13-44
+56            android:exported="false"
+56-->/home/danielmasdexaxars/TrobaCar v14/app/src/main/AndroidManifest.xml:41:13-37
+57            android:parentActivityName="cat.edealae.trobacar.MainActivity" />
+57-->/home/danielmasdexaxars/TrobaCar v14/app/src/main/AndroidManifest.xml:42:13-55
+58
+59        <!-- Servei de localització en foreground -->
+60        <service
+60-->/home/danielmasdexaxars/TrobaCar v14/app/src/main/AndroidManifest.xml:45:9-48:40
+61            android:name="cat.edealae.trobacar.LocationService"
+61-->/home/danielmasdexaxars/TrobaCar v14/app/src/main/AndroidManifest.xml:46:13-44
+62            android:exported="false"
+62-->/home/danielmasdexaxars/TrobaCar v14/app/src/main/AndroidManifest.xml:48:13-37
+63            android:foregroundServiceType="location" />
+63-->/home/danielmasdexaxars/TrobaCar v14/app/src/main/AndroidManifest.xml:47:13-53
+64
+65        <!-- Receiver per detectar connexió/desconnexió d'Android Auto -->
+66        <receiver
+66-->/home/danielmasdexaxars/TrobaCar v14/app/src/main/AndroidManifest.xml:51:9-57:20
+67            android:name="cat.edealae.trobacar.AndroidAutoReceiver"
+67-->/home/danielmasdexaxars/TrobaCar v14/app/src/main/AndroidManifest.xml:52:13-48
+68            android:exported="true" >
+68-->/home/danielmasdexaxars/TrobaCar v14/app/src/main/AndroidManifest.xml:53:13-36
+69            <intent-filter>
+69-->/home/danielmasdexaxars/TrobaCar v14/app/src/main/AndroidManifest.xml:54:13-56:29
+70                <action android:name="android.car.action.CAR_CONNECTION_STATUS" />
+70-->/home/danielmasdexaxars/TrobaCar v14/app/src/main/AndroidManifest.xml:55:17-83
+70-->/home/danielmasdexaxars/TrobaCar v14/app/src/main/AndroidManifest.xml:55:25-80
+71            </intent-filter>
+72        </receiver>
+73
+74        <!-- Receiver per detectar connexió/desconnexió Bluetooth -->
+75        <receiver
+75-->/home/danielmasdexaxars/TrobaCar v14/app/src/main/AndroidManifest.xml:60:9-67:20
+76            android:name="cat.edealae.trobacar.BluetoothReceiver"
+76-->/home/danielmasdexaxars/TrobaCar v14/app/src/main/AndroidManifest.xml:61:13-46
+77            android:exported="true" >
+77-->/home/danielmasdexaxars/TrobaCar v14/app/src/main/AndroidManifest.xml:62:13-36
+78            <intent-filter>
+78-->/home/danielmasdexaxars/TrobaCar v14/app/src/main/AndroidManifest.xml:63:13-66:29
+79                <action android:name="android.bluetooth.device.action.ACL_CONNECTED" />
+79-->/home/danielmasdexaxars/TrobaCar v14/app/src/main/AndroidManifest.xml:64:17-88
+79-->/home/danielmasdexaxars/TrobaCar v14/app/src/main/AndroidManifest.xml:64:25-85
+80                <action android:name="android.bluetooth.device.action.ACL_DISCONNECTED" />
+80-->/home/danielmasdexaxars/TrobaCar v14/app/src/main/AndroidManifest.xml:65:17-91
+80-->/home/danielmasdexaxars/TrobaCar v14/app/src/main/AndroidManifest.xml:65:25-88
+81            </intent-filter>
+82        </receiver>
+83
+84        <!-- Receiver per Activity Recognition -->
+85        <receiver
+85-->/home/danielmasdexaxars/TrobaCar v14/app/src/main/AndroidManifest.xml:70:9-72:40
+86            android:name="cat.edealae.trobacar.ActivityTransitionReceiver"
+86-->/home/danielmasdexaxars/TrobaCar v14/app/src/main/AndroidManifest.xml:71:13-55
+87            android:exported="false" />
+87-->/home/danielmasdexaxars/TrobaCar v14/app/src/main/AndroidManifest.xml:72:13-37
+88
+89        <!-- Receiver per iniciar al boot -->
+90        <receiver
+90-->/home/danielmasdexaxars/TrobaCar v14/app/src/main/AndroidManifest.xml:75:9-82:20
+91            android:name="cat.edealae.trobacar.BootReceiver"
+91-->/home/danielmasdexaxars/TrobaCar v14/app/src/main/AndroidManifest.xml:76:13-41
+92            android:enabled="true"
+92-->/home/danielmasdexaxars/TrobaCar v14/app/src/main/AndroidManifest.xml:77:13-35
+93            android:exported="true" >
+93-->/home/danielmasdexaxars/TrobaCar v14/app/src/main/AndroidManifest.xml:78:13-36
+94            <intent-filter>
+94-->/home/danielmasdexaxars/TrobaCar v14/app/src/main/AndroidManifest.xml:79:13-81:29
+95                <action android:name="android.intent.action.BOOT_COMPLETED" />
+95-->/home/danielmasdexaxars/TrobaCar v14/app/src/main/AndroidManifest.xml:80:17-79
+95-->/home/danielmasdexaxars/TrobaCar v14/app/src/main/AndroidManifest.xml:80:25-76
+96            </intent-filter>
+97        </receiver>
+98
+99        <provider
+99-->[androidx.emoji2:emoji2:1.2.0] /home/danielmasdexaxars/.gradle/caches/9.0-milestone-1/transforms/16e1ca2dbf3336e4a8c39f1d6180e464/transformed/emoji2-1.2.0/AndroidManifest.xml:24:9-32:20
+100            android:name="androidx.startup.InitializationProvider"
+100-->[androidx.emoji2:emoji2:1.2.0] /home/danielmasdexaxars/.gradle/caches/9.0-milestone-1/transforms/16e1ca2dbf3336e4a8c39f1d6180e464/transformed/emoji2-1.2.0/AndroidManifest.xml:25:13-67
+101            android:authorities="cat.edealae.trobacar.androidx-startup"
+101-->[androidx.emoji2:emoji2:1.2.0] /home/danielmasdexaxars/.gradle/caches/9.0-milestone-1/transforms/16e1ca2dbf3336e4a8c39f1d6180e464/transformed/emoji2-1.2.0/AndroidManifest.xml:26:13-68
+102            android:exported="false" >
+102-->[androidx.emoji2:emoji2:1.2.0] /home/danielmasdexaxars/.gradle/caches/9.0-milestone-1/transforms/16e1ca2dbf3336e4a8c39f1d6180e464/transformed/emoji2-1.2.0/AndroidManifest.xml:27:13-37
+103            <meta-data
+103-->[androidx.emoji2:emoji2:1.2.0] /home/danielmasdexaxars/.gradle/caches/9.0-milestone-1/transforms/16e1ca2dbf3336e4a8c39f1d6180e464/transformed/emoji2-1.2.0/AndroidManifest.xml:29:13-31:52
+104                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+104-->[androidx.emoji2:emoji2:1.2.0] /home/danielmasdexaxars/.gradle/caches/9.0-milestone-1/transforms/16e1ca2dbf3336e4a8c39f1d6180e464/transformed/emoji2-1.2.0/AndroidManifest.xml:30:17-75
+105                android:value="androidx.startup" />
+105-->[androidx.emoji2:emoji2:1.2.0] /home/danielmasdexaxars/.gradle/caches/9.0-milestone-1/transforms/16e1ca2dbf3336e4a8c39f1d6180e464/transformed/emoji2-1.2.0/AndroidManifest.xml:31:17-49
+106            <meta-data
+106-->[androidx.lifecycle:lifecycle-process:2.6.1] /home/danielmasdexaxars/.gradle/caches/9.0-milestone-1/transforms/f24f9d09266c1d88a47aa0baf9e46802/transformed/lifecycle-process-2.6.1/AndroidManifest.xml:29:13-31:52
+107                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+107-->[androidx.lifecycle:lifecycle-process:2.6.1] /home/danielmasdexaxars/.gradle/caches/9.0-milestone-1/transforms/f24f9d09266c1d88a47aa0baf9e46802/transformed/lifecycle-process-2.6.1/AndroidManifest.xml:30:17-78
+108                android:value="androidx.startup" />
+108-->[androidx.lifecycle:lifecycle-process:2.6.1] /home/danielmasdexaxars/.gradle/caches/9.0-milestone-1/transforms/f24f9d09266c1d88a47aa0baf9e46802/transformed/lifecycle-process-2.6.1/AndroidManifest.xml:31:17-49
+109            <meta-data
+109-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/danielmasdexaxars/.gradle/caches/9.0-milestone-1/transforms/7d0839d17f83ba0f2cbd69796685398f/transformed/profileinstaller-1.3.0/AndroidManifest.xml:29:13-31:52
+110                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+110-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/danielmasdexaxars/.gradle/caches/9.0-milestone-1/transforms/7d0839d17f83ba0f2cbd69796685398f/transformed/profileinstaller-1.3.0/AndroidManifest.xml:30:17-85
+111                android:value="androidx.startup" />
+111-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/danielmasdexaxars/.gradle/caches/9.0-milestone-1/transforms/7d0839d17f83ba0f2cbd69796685398f/transformed/profileinstaller-1.3.0/AndroidManifest.xml:31:17-49
+112        </provider>
+113
+114        <activity
+114-->[com.google.android.gms:play-services-base:18.1.0] /home/danielmasdexaxars/.gradle/caches/9.0-milestone-1/transforms/f24602fc51d36b74dde59363388c4ba7/transformed/play-services-base-18.1.0/AndroidManifest.xml:20:9-22:45
+115            android:name="com.google.android.gms.common.api.GoogleApiActivity"
+115-->[com.google.android.gms:play-services-base:18.1.0] /home/danielmasdexaxars/.gradle/caches/9.0-milestone-1/transforms/f24602fc51d36b74dde59363388c4ba7/transformed/play-services-base-18.1.0/AndroidManifest.xml:20:19-85
+116            android:exported="false"
+116-->[com.google.android.gms:play-services-base:18.1.0] /home/danielmasdexaxars/.gradle/caches/9.0-milestone-1/transforms/f24602fc51d36b74dde59363388c4ba7/transformed/play-services-base-18.1.0/AndroidManifest.xml:22:19-43
+117            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+117-->[com.google.android.gms:play-services-base:18.1.0] /home/danielmasdexaxars/.gradle/caches/9.0-milestone-1/transforms/f24602fc51d36b74dde59363388c4ba7/transformed/play-services-base-18.1.0/AndroidManifest.xml:21:19-78
+118
+119        <meta-data
+119-->[com.google.android.gms:play-services-basement:18.1.0] /home/danielmasdexaxars/.gradle/caches/9.0-milestone-1/transforms/d2669848cee7fb26b80ae8b9ee27b24d/transformed/play-services-basement-18.1.0/AndroidManifest.xml:21:9-23:69
+120            android:name="com.google.android.gms.version"
+120-->[com.google.android.gms:play-services-basement:18.1.0] /home/danielmasdexaxars/.gradle/caches/9.0-milestone-1/transforms/d2669848cee7fb26b80ae8b9ee27b24d/transformed/play-services-basement-18.1.0/AndroidManifest.xml:22:13-58
+121            android:value="@integer/google_play_services_version" />
+121-->[com.google.android.gms:play-services-basement:18.1.0] /home/danielmasdexaxars/.gradle/caches/9.0-milestone-1/transforms/d2669848cee7fb26b80ae8b9ee27b24d/transformed/play-services-basement-18.1.0/AndroidManifest.xml:23:13-66
+122
+123        <receiver
+123-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/danielmasdexaxars/.gradle/caches/9.0-milestone-1/transforms/7d0839d17f83ba0f2cbd69796685398f/transformed/profileinstaller-1.3.0/AndroidManifest.xml:34:9-52:20
+124            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+124-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/danielmasdexaxars/.gradle/caches/9.0-milestone-1/transforms/7d0839d17f83ba0f2cbd69796685398f/transformed/profileinstaller-1.3.0/AndroidManifest.xml:35:13-76
+125            android:directBootAware="false"
+125-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/danielmasdexaxars/.gradle/caches/9.0-milestone-1/transforms/7d0839d17f83ba0f2cbd69796685398f/transformed/profileinstaller-1.3.0/AndroidManifest.xml:36:13-44
+126            android:enabled="true"
+126-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/danielmasdexaxars/.gradle/caches/9.0-milestone-1/transforms/7d0839d17f83ba0f2cbd69796685398f/transformed/profileinstaller-1.3.0/AndroidManifest.xml:37:13-35
+127            android:exported="true"
+127-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/danielmasdexaxars/.gradle/caches/9.0-milestone-1/transforms/7d0839d17f83ba0f2cbd69796685398f/transformed/profileinstaller-1.3.0/AndroidManifest.xml:38:13-36
+128            android:permission="android.permission.DUMP" >
+128-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/danielmasdexaxars/.gradle/caches/9.0-milestone-1/transforms/7d0839d17f83ba0f2cbd69796685398f/transformed/profileinstaller-1.3.0/AndroidManifest.xml:39:13-57
+129            <intent-filter>
+129-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/danielmasdexaxars/.gradle/caches/9.0-milestone-1/transforms/7d0839d17f83ba0f2cbd69796685398f/transformed/profileinstaller-1.3.0/AndroidManifest.xml:40:13-42:29
+130                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
+130-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/danielmasdexaxars/.gradle/caches/9.0-milestone-1/transforms/7d0839d17f83ba0f2cbd69796685398f/transformed/profileinstaller-1.3.0/AndroidManifest.xml:41:17-91
+130-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/danielmasdexaxars/.gradle/caches/9.0-milestone-1/transforms/7d0839d17f83ba0f2cbd69796685398f/transformed/profileinstaller-1.3.0/AndroidManifest.xml:41:25-88
+131            </intent-filter>
+132            <intent-filter>
+132-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/danielmasdexaxars/.gradle/caches/9.0-milestone-1/transforms/7d0839d17f83ba0f2cbd69796685398f/transformed/profileinstaller-1.3.0/AndroidManifest.xml:43:13-45:29
+133                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
+133-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/danielmasdexaxars/.gradle/caches/9.0-milestone-1/transforms/7d0839d17f83ba0f2cbd69796685398f/transformed/profileinstaller-1.3.0/AndroidManifest.xml:44:17-85
+133-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/danielmasdexaxars/.gradle/caches/9.0-milestone-1/transforms/7d0839d17f83ba0f2cbd69796685398f/transformed/profileinstaller-1.3.0/AndroidManifest.xml:44:25-82
+134            </intent-filter>
+135            <intent-filter>
+135-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/danielmasdexaxars/.gradle/caches/9.0-milestone-1/transforms/7d0839d17f83ba0f2cbd69796685398f/transformed/profileinstaller-1.3.0/AndroidManifest.xml:46:13-48:29
+136                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
+136-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/danielmasdexaxars/.gradle/caches/9.0-milestone-1/transforms/7d0839d17f83ba0f2cbd69796685398f/transformed/profileinstaller-1.3.0/AndroidManifest.xml:47:17-88
+136-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/danielmasdexaxars/.gradle/caches/9.0-milestone-1/transforms/7d0839d17f83ba0f2cbd69796685398f/transformed/profileinstaller-1.3.0/AndroidManifest.xml:47:25-85
+137            </intent-filter>
+138            <intent-filter>
+138-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/danielmasdexaxars/.gradle/caches/9.0-milestone-1/transforms/7d0839d17f83ba0f2cbd69796685398f/transformed/profileinstaller-1.3.0/AndroidManifest.xml:49:13-51:29
+139                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
+139-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/danielmasdexaxars/.gradle/caches/9.0-milestone-1/transforms/7d0839d17f83ba0f2cbd69796685398f/transformed/profileinstaller-1.3.0/AndroidManifest.xml:50:17-95
+139-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/danielmasdexaxars/.gradle/caches/9.0-milestone-1/transforms/7d0839d17f83ba0f2cbd69796685398f/transformed/profileinstaller-1.3.0/AndroidManifest.xml:50:25-92
+140            </intent-filter>
+141        </receiver>
+142    </application>
+143
+144</manifest>

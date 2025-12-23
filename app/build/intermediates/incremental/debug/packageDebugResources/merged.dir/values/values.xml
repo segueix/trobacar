@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr format="color" name="colorSurfaceElevated"/>
+    <color name="background_dark">#121212</color>
+    <color name="background_light">#F5F5F5</color>
+    <color name="black">#000000</color>
+    <color name="green">#4CAF50</color>
+    <color name="primary_blue">#1976D2</color>
+    <color name="primary_blue_dark">#0D47A1</color>
+    <color name="primary_blue_light">#42A5F5</color>
+    <color name="primary_green">#43A047</color>
+    <color name="primary_green_dark">#2E7D32</color>
+    <color name="primary_green_light">#66BB6A</color>
+    <color name="primary_purple">#8E24AA</color>
+    <color name="primary_purple_dark">#6A1B9A</color>
+    <color name="primary_purple_light">#AB47BC</color>
+    <color name="primary_red">#E53935</color>
+    <color name="primary_red_dark">#C62828</color>
+    <color name="primary_red_light">#EF5350</color>
+    <color name="red">#F44336</color>
+    <color name="surface_dark">#1E1E1E</color>
+    <color name="surface_elevated_dark">#2C2C2C</color>
+    <color name="surface_elevated_light">#FFFFFF</color>
+    <color name="surface_light">#FFFFFF</color>
+    <color name="text_hint_dark">#757575</color>
+    <color name="text_hint_light">#9E9E9E</color>
+    <color name="text_primary_dark">#FFFFFF</color>
+    <color name="text_primary_light">#212121</color>
+    <color name="text_secondary_dark">#B0B0B0</color>
+    <color name="text_secondary_light">#757575</color>
+    <color name="white">#FFFFFF</color>
+    <string name="app_name">PinPark</string>
+    <string name="cancel">Cancel·lar</string>
+    <string name="car">Cotxe</string>
+    <string name="current_parking">Aparcament actual</string>
+    <string name="dark">Fosc</string>
+    <string name="delete">Esborrar</string>
+    <string name="delete_all_history">🗑️ Esborrar tot l\'historial</string>
+    <string name="delete_confirmation">Vols esborrar tot l\'historial?</string>
+    <string name="edit_name">Editar nom</string>
+    <string name="gps">GPS</string>
+    <string name="history">Historial</string>
+    <string name="location_history">Historial d\'ubicacions</string>
+    <string name="location_saved">✓ Ubicació guardada (%s) - %s</string>
+    <string name="no_history">No hi ha historial d\'ubicacions</string>
+    <string name="no_location_saved">Encara no s\'ha guardat cap ubicació\n\nL\'app detectarà automàticament quan surts del cotxe</string>
+    <string name="no_map_apps">No hi ha apps de mapes disponibles</string>
+    <string name="open_with">Obrir amb...</string>
+    <string name="parking">Aparcament</string>
+    <string name="save">Guardar</string>
+    <string name="saved_location">Ubicació guardada</string>
+    <string name="subtitle">Troba el teu cotxe a l\'instant</string>
+    <string name="tap_to_open_map">Toca per obrir al mapa</string>
+    <string name="view_past_parking">Veure aparcaments anteriors</string>
+    <style name="Theme.TrobaCar" parent="Theme.TrobaCar.Light.Blue"/>
+    <style name="Theme.TrobaCar.Dark.Blue" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <item name="colorPrimary">@color/primary_blue_light</item>
+        <item name="colorPrimaryVariant">@color/primary_blue</item>
+        <item name="colorOnPrimary">@color/black</item>
+        <item name="colorSecondary">@color/primary_blue_light</item>
+        <item name="colorSurface">@color/surface_dark</item>
+        <item name="colorSurfaceElevated">@color/surface_elevated_dark</item>
+        <item name="android:statusBarColor">@color/black</item>
+        <item name="android:windowBackground">@color/background_dark</item>
+        <item name="android:textColorPrimary">@color/text_primary_dark</item>
+        <item name="android:textColorSecondary">@color/text_secondary_dark</item>
+    </style>
+    <style name="Theme.TrobaCar.Dark.Green" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <item name="colorPrimary">@color/primary_green_light</item>
+        <item name="colorPrimaryVariant">@color/primary_green</item>
+        <item name="colorOnPrimary">@color/black</item>
+        <item name="colorSecondary">@color/primary_green_light</item>
+        <item name="colorSurface">@color/surface_dark</item>
+        <item name="colorSurfaceElevated">@color/surface_elevated_dark</item>
+        <item name="android:statusBarColor">@color/black</item>
+        <item name="android:windowBackground">@color/background_dark</item>
+        <item name="android:textColorPrimary">@color/text_primary_dark</item>
+        <item name="android:textColorSecondary">@color/text_secondary_dark</item>
+    </style>
+    <style name="Theme.TrobaCar.Dark.Purple" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <item name="colorPrimary">@color/primary_purple_light</item>
+        <item name="colorPrimaryVariant">@color/primary_purple</item>
+        <item name="colorOnPrimary">@color/black</item>
+        <item name="colorSecondary">@color/primary_purple_light</item>
+        <item name="colorSurface">@color/surface_dark</item>
+        <item name="colorSurfaceElevated">@color/surface_elevated_dark</item>
+        <item name="android:statusBarColor">@color/black</item>
+        <item name="android:windowBackground">@color/background_dark</item>
+        <item name="android:textColorPrimary">@color/text_primary_dark</item>
+        <item name="android:textColorSecondary">@color/text_secondary_dark</item>
+    </style>
+    <style name="Theme.TrobaCar.Dark.Red" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <item name="colorPrimary">@color/primary_red_light</item>
+        <item name="colorPrimaryVariant">@color/primary_red</item>
+        <item name="colorOnPrimary">@color/black</item>
+        <item name="colorSecondary">@color/primary_red_light</item>
+        <item name="colorSurface">@color/surface_dark</item>
+        <item name="colorSurfaceElevated">@color/surface_elevated_dark</item>
+        <item name="android:statusBarColor">@color/black</item>
+        <item name="android:windowBackground">@color/background_dark</item>
+        <item name="android:textColorPrimary">@color/text_primary_dark</item>
+        <item name="android:textColorSecondary">@color/text_secondary_dark</item>
+    </style>
+    <style name="Theme.TrobaCar.Light.Blue" parent="Theme.MaterialComponents.Light.DarkActionBar">
+        <item name="colorPrimary">@color/primary_blue</item>
+        <item name="colorPrimaryVariant">@color/primary_blue_dark</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorSecondary">@color/primary_blue_light</item>
+        <item name="colorSurface">@color/surface_light</item>
+        <item name="colorSurfaceElevated">@color/surface_elevated_light</item>
+        <item name="android:statusBarColor">@color/primary_blue_dark</item>
+        <item name="android:windowBackground">@color/background_light</item>
+        <item name="android:textColorPrimary">@color/text_primary_light</item>
+        <item name="android:textColorSecondary">@color/text_secondary_light</item>
+    </style>
+    <style name="Theme.TrobaCar.Light.Green" parent="Theme.MaterialComponents.Light.DarkActionBar">
+        <item name="colorPrimary">@color/primary_green</item>
+        <item name="colorPrimaryVariant">@color/primary_green_dark</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorSecondary">@color/primary_green_light</item>
+        <item name="colorSurface">@color/surface_light</item>
+        <item name="colorSurfaceElevated">@color/surface_elevated_light</item>
+        <item name="android:statusBarColor">@color/primary_green_dark</item>
+        <item name="android:windowBackground">@color/background_light</item>
+        <item name="android:textColorPrimary">@color/text_primary_light</item>
+        <item name="android:textColorSecondary">@color/text_secondary_light</item>
+    </style>
+    <style name="Theme.TrobaCar.Light.Purple" parent="Theme.MaterialComponents.Light.DarkActionBar">
+        <item name="colorPrimary">@color/primary_purple</item>
+        <item name="colorPrimaryVariant">@color/primary_purple_dark</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorSecondary">@color/primary_purple_light</item>
+        <item name="colorSurface">@color/surface_light</item>
+        <item name="colorSurfaceElevated">@color/surface_elevated_light</item>
+        <item name="android:statusBarColor">@color/primary_purple_dark</item>
+        <item name="android:windowBackground">@color/background_light</item>
+        <item name="android:textColorPrimary">@color/text_primary_light</item>
+        <item name="android:textColorSecondary">@color/text_secondary_light</item>
+    </style>
+    <style name="Theme.TrobaCar.Light.Red" parent="Theme.MaterialComponents.Light.DarkActionBar">
+        <item name="colorPrimary">@color/primary_red</item>
+        <item name="colorPrimaryVariant">@color/primary_red_dark</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorSecondary">@color/primary_red_light</item>
+        <item name="colorSurface">@color/surface_light</item>
+        <item name="colorSurfaceElevated">@color/surface_elevated_light</item>
+        <item name="android:statusBarColor">@color/primary_red_dark</item>
+        <item name="android:windowBackground">@color/background_light</item>
+        <item name="android:textColorPrimary">@color/text_primary_light</item>
+        <item name="android:textColorSecondary">@color/text_secondary_light</item>
+    </style>
+</resources>

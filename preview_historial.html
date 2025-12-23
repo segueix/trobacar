@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PinPark - Preview Historial</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #e0e0e0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .phone {
+            width: 100%;
+            max-width: 400px;
+            height: 800px;
+            background: #f5f5f5;
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .phone.dark {
+            background: #121212;
+        }
+
+        /* Header superior */
+        .top-bar {
+            background: #f5f5f5;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .phone.dark .top-bar {
+            background: #121212;
+        }
+
+        .top-bar h1 {
+            font-size: 20px;
+            font-weight: bold;
+            color: #212121;
+        }
+
+        .phone.dark .top-bar h1 {
+            color: #ffffff;
+        }
+
+        /* Barra de colors */
+        .color-bar {
+            background: var(--primary-color, #1976D2);
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .color-selector {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .color-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 3px solid #ffffff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .color-circle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .color-circle:active {
+            transform: scale(0.95);
+        }
+
+        .color-circle.blue {
+            background: #1976D2;
+        }
+
+        .color-circle.green {
+            background: #43A047;
+        }
+
+        .color-circle.red {
+            background: #E53935;
+        }
+
+        .color-circle.purple {
+            background: #8E24AA;
+        }
+
+        /* Switch mode fosc */
+        .dark-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dark-toggle span {
+            color: white;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .switch {
+            position: relative;
+            width: 48px;
+            height: 28px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 14px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .switch.active {
+            background: rgba(255,255,255,0.5);
+        }
+
+        .switch-thumb {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .switch.active .switch-thumb {
+            transform: translateX(20px);
+        }
+
+        /* Contingut */
+        .content {
+            padding: 20px;
+            height: calc(100% - 120px);
+            overflow-y: auto;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #757575;
+            font-size: 18px;
+            margin-top: 100px;
+        }
+
+        .phone.dark .empty-state {
+            color: #b0b0b0;
+        }
+
+        .history-item {
+            background: white;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .phone.dark .history-item {
+            background: #1e1e1e;
+        }
+
+        .history-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .history-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            position: relative;
+        }
+
+        .history-icon.bluetooth {
+            background: #E3F2FD;
+        }
+
+        .phone.dark .history-icon.bluetooth {
+            background: rgba(66, 165, 245, 0.2);
+        }
+
+        .history-icon.activity {
+            background: #FFF3E0;
+        }
+
+        .phone.dark .history-icon.activity {
+            background: rgba(255, 152, 0, 0.2);
+        }
+
+        .car-badge {
+            position: absolute;
+            bottom: -4px;
+            right: -4px;
+            width: 16px;
+            height: 16px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+        }
+
+        .phone.dark .car-badge {
+            background: #1e1e1e;
+        }
+
+        .history-info {
+            flex: 1;
+        }
+
+        .history-info h3 {
+            font-size: 16px;
+            font-weight: bold;
+            color: #212121;
+            margin-bottom: 4px;
+        }
+
+        .phone.dark .history-info h3 {
+            color: #ffffff;
+        }
+
+        .history-info .date {
+            font-size: 14px;
+            color: #757575;
+            margin-bottom: 4px;
+        }
+
+        .phone.dark .history-info .date {
+            color: #b0b0b0;
+        }
+
+        .history-info .coords {
+            font-size: 11px;
+            color: #9e9e9e;
+            font-family: monospace;
+        }
+
+        .phone.dark .history-info .coords {
+            color: #757575;
+        }
+
+        .arrow {
+            color: #9e9e9e;
+            font-size: 20px;
+        }
+
+        .phone.dark .arrow {
+            color: #757575;
+        }
+
+        /* Delete button */
+        .delete-button {
+            padding: 20px;
+            text-align: center;
+            color: #E53935;
+            font-weight: bold;
+            cursor: pointer;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .phone.dark .delete-button {
+            border-top-color: #333;
+        }
+
+        .delete-button:hover {
+            background: rgba(229, 57, 53, 0.05);
+        }
+
+        /* Toggle exterior */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 12px 24px;
+            border-radius: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .theme-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="theme-toggle" onclick="togglePreviewMode()">
+        🌓 Canviar Mode (Preview)
+    </div>
+
+    <div class="phone" id="phone">
+        <!-- Header superior -->
+        <div class="top-bar">
+            <h1>Historial</h1>
+        </div>
+
+        <!-- Barra de colors amb cercles perfectes -->
+        <div class="color-bar" id="colorBar">
+            <div class="color-selector">
+                <div class="color-circle blue" onclick="changeColor('#1976D2', 'blue')" title="Blau"></div>
+                <div class="color-circle green" onclick="changeColor('#43A047', 'green')" title="Verd"></div>
+                <div class="color-circle red" onclick="changeColor('#E53935', 'red')" title="Vermell"></div>
+                <div class="color-circle purple" onclick="changeColor('#8E24AA', 'purple')" title="Porpra"></div>
+            </div>
+
+            <div class="dark-toggle">
+                <span>Fosc</span>
+                <div class="switch" onclick="toggleDarkMode()">
+                    <div class="switch-thumb"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contingut -->
+        <div class="content">
+            <!-- Exemple d'items -->
+            <div class="history-item">
+                <div class="history-icon activity">
+                    🚶
+                    <div class="car-badge">🚗</div>
+                </div>
+                <div class="history-info">
+                    <h3>Activity - 16:16</h3>
+                    <div class="date">Dec 19, 2025</div>
+                    <div class="coords">• 41.682947 • 2.287196</div>
+                </div>
+                <div class="arrow">›</div>
+            </div>
+
+            <div class="history-item">
+                <div class="history-icon bluetooth">
+                    🔵
+                    <div class="car-badge">🚗</div>
+                </div>
+                <div class="history-info">
+                    <h3>Bluetooth - 16:15</h3>
+                    <div class="date">Dec 19, 2025</div>
+                    <div class="coords">• 41.682950 • 2.287327</div>
+                </div>
+                <div class="arrow">›</div>
+            </div>
+
+            <div class="history-item">
+                <div class="history-icon bluetooth">
+                    🔵
+                    <div class="car-badge">🚗</div>
+                </div>
+                <div class="history-info">
+                    <h3>Bluetooth - 16:15</h3>
+                    <div class="date">Dec 19, 2025</div>
+                    <div class="coords">• 41.682943 • 2.287330</div>
+                </div>
+                <div class="arrow">›</div>
+            </div>
+
+            <div class="history-item">
+                <div class="history-icon activity">
+                    🚶
+                    <div class="car-badge">🚗</div>
+                </div>
+                <div class="history-info">
+                    <h3>Activity - 15:26</h3>
+                    <div class="date">Dec 19, 2025</div>
+                    <div class="coords">• 41.684527 • 2.286596</div>
+                </div>
+                <div class="arrow">›</div>
+            </div>
+
+            <!-- Si no hi ha historial -->
+            <!-- <div class="empty-state">
+                No hi ha historial<br>d'ubicacions
+            </div> -->
+        </div>
+
+        <!-- Delete button -->
+        <div class="delete-button">
+            🗑️ Esborrar tot l'historial
+        </div>
+    </div>
+
+    <script>
+        function toggleDarkMode() {
+            const phone = document.getElementById('phone');
+            const switchEl = document.querySelector('.switch');
+            
+            phone.classList.toggle('dark');
+            switchEl.classList.toggle('active');
+        }
+
+        function togglePreviewMode() {
+            toggleDarkMode();
+        }
+
+        function changeColor(color, name) {
+            const colorBar = document.getElementById('colorBar');
+            colorBar.style.background = color;
+            
+            // Mostrar notificació
+            console.log(`Color canviat a: ${name}`);
+        }
+
+        // Animació inicial dels cercles
+        window.addEventListener('load', () => {
+            const circles = document.querySelectorAll('.color-circle');
+            circles.forEach((circle, index) => {
+                setTimeout(() => {
+                    circle.style.animation = 'pulse 0.5s ease';
+                }, index * 100);
+            });
+        });
+    </script>
+</body>
+</html>

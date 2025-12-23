@@ -1,0 +1,25 @@
+<resources>
+    <string name="app_name">PinPark</string>
+    <string name="subtitle">Find your car instantly</string>
+    <string name="gps">GPS</string>
+    <string name="car">Car</string>
+    <string name="saved_location">Saved location</string>
+    <string name="tap_to_open_map">Tap to open on map</string>
+    <string name="no_location_saved">No location saved yet\n\nThe app will automatically detect when you leave the car</string>
+    <string name="location_history">Location history</string>
+    <string name="view_past_parking">View past parking spots</string>
+    <string name="history">History</string>
+    <string name="dark">Dark</string>
+    <string name="delete_all_history">🗑️ Delete all history</string>
+    <string name="no_history">No location history</string>
+    <string name="delete_confirmation">Do you want to delete all history?</string>
+    <string name="delete">Delete</string>
+    <string name="cancel">Cancel</string>
+    <string name="open_with">Open with...</string>
+    <string name="no_map_apps">No map apps available</string>
+    <string name="location_saved">✓ Location saved (%s) - %s</string>
+    <string name="current_parking">Current parking</string>
+    <string name="parking">Parking</string>
+    <string name="edit_name">Edit name</string>
+    <string name="save">Save</string>
+</resources>
