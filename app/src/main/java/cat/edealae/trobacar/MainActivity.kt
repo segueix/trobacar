@@ -21,6 +21,10 @@ import com.google.android.material.button.MaterialButton
 
 class MainActivity : AppCompatActivity() {
 
+    companion object {
+        private const val CAR_BLUETOOTH_PREF_KEY = "car_bluetooth_name"
+    }
+
     private lateinit var gpsIndicator: ImageView
     private lateinit var androidAutoIndicator: ImageView
     private lateinit var locationCard: CardView
@@ -87,6 +91,8 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+        ensureCarBluetoothName()
+
         // Demanar permisos si cal
         checkAndRequestPermissions()
         
@@ -149,6 +155,33 @@ class MainActivity : AppCompatActivity() {
         } else {
             startLocationService()
         }
+    }
+
+    private fun ensureCarBluetoothName() {
+        val prefs = getSharedPreferences("TrobaCar", Context.MODE_PRIVATE)
+        val currentName = prefs.getString(CAR_BLUETOOTH_PREF_KEY, null)
+        if (!currentName.isNullOrBlank()) {
+            return
+        }
+
+        val input = EditText(this)
+        input.hint = "Nom del Bluetooth del cotxe"
+
+        AlertDialog.Builder(this)
+            .setTitle("Configura el Bluetooth del cotxe")
+            .setMessage("Introdueix el nom exacte del Bluetooth del teu cotxe (respecta majúscules i minúscules).")
+            .setView(input)
+            .setCancelable(false)
+            .setPositiveButton("Guardar") { _, _ ->
+                val name = input.text.toString().trim()
+                if (name.isNotEmpty()) {
+                    prefs.edit().putString(CAR_BLUETOOTH_PREF_KEY, name).apply()
+                } else {
+                    Toast.makeText(this, "Has d'introduir un nom vàlid", Toast.LENGTH_SHORT).show()
+                    ensureCarBluetoothName()
+                }
+            }
+            .show()
     }
 
     private fun startLocationService() {

@@ -12,6 +12,7 @@ class BluetoothReceiver : BroadcastReceiver() {
 
     companion object {
         const val CAR_BLUETOOTH_NAME = "MYCAR"
+        private const val CAR_BLUETOOTH_PREF_KEY = "car_bluetooth_name"
     }
 
     override fun onReceive(context: Context?, intent: Intent?) {
@@ -24,14 +25,16 @@ class BluetoothReceiver : BroadcastReceiver() {
 
         val deviceName = device.name ?: return
         val prefs = context.getSharedPreferences("TrobaCar", Context.MODE_PRIVATE)
+        val carBluetoothName = prefs.getString(CAR_BLUETOOTH_PREF_KEY, null)?.trim()
 
         // Només processar si és el nostre cotxe
-        if (deviceName == CAR_BLUETOOTH_NAME) {
+        val targetName = if (!carBluetoothName.isNullOrEmpty()) carBluetoothName else CAR_BLUETOOTH_NAME
+        if (deviceName == targetName) {
             when (action) {
                 BluetoothDevice.ACTION_ACL_CONNECTED -> {
                     // Connectat al Bluetooth del cotxe
                     prefs.edit().putBoolean("bluetooth_connected", true).apply()
-                    Toast.makeText(context, "Connectat a $CAR_BLUETOOTH_NAME", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Connectat a $targetName", Toast.LENGTH_SHORT).show()
                 }
                 
                 BluetoothDevice.ACTION_ACL_DISCONNECTED -> {

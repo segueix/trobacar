@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -17,11 +18,17 @@ import androidx.recyclerview.widget.RecyclerView
 
 class HistoryActivity : AppCompatActivity() {
 
+    companion object {
+        private const val CAR_BLUETOOTH_PREF_KEY = "car_bluetooth_name"
+    }
+
     private lateinit var recyclerView: RecyclerView
     private lateinit var emptyView: TextView
     private lateinit var clearButton: TextView
     private lateinit var adapter: HistoryAdapter
     private lateinit var darkModeSwitch: com.google.android.material.switchmaterial.SwitchMaterial
+    private lateinit var carBluetoothName: TextView
+    private lateinit var resetCarBluetoothButton: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         // Aplicar tema guardat abans de setContentView
@@ -37,16 +44,23 @@ class HistoryActivity : AppCompatActivity() {
         emptyView = findViewById(R.id.emptyHistoryText)
         clearButton = findViewById(R.id.clearHistoryButton)
         darkModeSwitch = findViewById(R.id.darkModeSwitch)
+        carBluetoothName = findViewById(R.id.carBluetoothName)
+        resetCarBluetoothButton = findViewById(R.id.resetCarBluetoothButton)
 
         recyclerView.layoutManager = LinearLayoutManager(this)
         
         clearButton.setOnClickListener {
             showClearConfirmDialog()
         }
+
+        resetCarBluetoothButton.setOnClickListener {
+            showCarBluetoothDialog()
+        }
         
         setupThemeSelectors()
 
         loadHistory()
+        updateCarBluetoothName()
     }
     
     private fun setupThemeSelectors() {
@@ -125,6 +139,43 @@ class HistoryActivity : AppCompatActivity() {
             )
             recyclerView.adapter = adapter
         }
+    }
+
+    private fun updateCarBluetoothName() {
+        val prefs = getSharedPreferences("TrobaCar", Context.MODE_PRIVATE)
+        val name = prefs.getString(CAR_BLUETOOTH_PREF_KEY, null)?.trim()
+        if (name.isNullOrEmpty()) {
+            carBluetoothName.text = "Bluetooth del cotxe: Sense nom"
+            resetCarBluetoothButton.text = "Configurar"
+        } else {
+            carBluetoothName.text = "Bluetooth del cotxe: $name"
+            resetCarBluetoothButton.text = "Reset"
+        }
+    }
+
+    private fun showCarBluetoothDialog() {
+        val prefs = getSharedPreferences("TrobaCar", Context.MODE_PRIVATE)
+        val currentName = prefs.getString(CAR_BLUETOOTH_PREF_KEY, null).orEmpty()
+        val input = EditText(this)
+        input.setText(currentName)
+        input.setSelectAllOnFocus(true)
+        input.hint = "Nom del Bluetooth del cotxe"
+
+        AlertDialog.Builder(this)
+            .setTitle("Bluetooth del cotxe")
+            .setMessage("Introdueix el nom exacte del Bluetooth del teu cotxe (respecta majúscules i minúscules).")
+            .setView(input)
+            .setPositiveButton("Guardar") { _, _ ->
+                val name = input.text.toString().trim()
+                if (name.isNotEmpty()) {
+                    prefs.edit().putString(CAR_BLUETOOTH_PREF_KEY, name).apply()
+                    updateCarBluetoothName()
+                } else {
+                    Toast.makeText(this, "Has d'introduir un nom vàlid", Toast.LENGTH_SHORT).show()
+                }
+            }
+            .setNegativeButton("Cancel·lar", null)
+            .show()
     }
     
     private fun deleteEntry(entry: LocationEntry) {
