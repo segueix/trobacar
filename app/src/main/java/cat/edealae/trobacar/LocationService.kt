@@ -5,6 +5,7 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
+import android.app.AlarmManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -100,21 +101,12 @@ class LocationService : Service(), LocationListener {
     override fun onDestroy() {
         super.onDestroy()
         locationManager.removeUpdates(this)
+        scheduleServiceRestart()
     }
 
     override fun onTaskRemoved(rootIntent: Intent?) {
         // Si el sistema tanca l'app en segon pla, intentar reiniciar el servei per mantenir-lo actiu
-        val restartIntent = Intent(applicationContext, LocationService::class.java).apply {
-            `package` = packageName
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            applicationContext.startForegroundService(restartIntent)
-        } else {
-            @Suppress("DEPRECATION")
-            applicationContext.startService(restartIntent)
-        }
-
+        scheduleServiceRestart()
         super.onTaskRemoved(rootIntent)
     }
 
@@ -130,5 +122,24 @@ class LocationService : Service(), LocationListener {
         ) == PackageManager.PERMISSION_GRANTED
 
         return fineGranted || coarseGranted
+    }
+
+    private fun scheduleServiceRestart() {
+        val restartIntent = Intent(applicationContext, ServiceRestartReceiver::class.java)
+        val pendingIntent = PendingIntent.getBroadcast(
+            this,
+            0,
+            restartIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val triggerAt = System.currentTimeMillis() + 60_000L
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAt, pendingIntent)
+        } else {
+            @Suppress("DEPRECATION")
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP, triggerAt, pendingIntent)
+        }
     }
 }
