@@ -35,4 +35,11 @@
     <string name="bluetooth_default_device">Predeterminat: %1$s</string>
     <string name="save_default_bluetooth">Guardar com a predeterminat</string>
     <string name="bluetooth_default_saved">Bluetooth predeterminat guardat</string>
+    <string name="error_log_title">Registre d\'errors</string>
+    <string name="error_log_subtitle">Consulta els errors de l\'aplicació</string>
+    <string name="error_log_empty">Sense errors registrats</string>
+    <string name="error_log_cleared">Registre esborrat</string>
+    <string name="error_log_clear">Esborrar</string>
+    <string name="error_log_share">Compartir</string>
+    <string name="error_log_close">Tancar</string>
 </resources>

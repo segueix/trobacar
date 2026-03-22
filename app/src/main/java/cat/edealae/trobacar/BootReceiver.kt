@@ -7,16 +7,18 @@ import android.os.Build
 
 class BootReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
-        if (intent?.action == Intent.ACTION_BOOT_COMPLETED) {
-            context?.let {
-                // Iniciar servei de localització
-                val serviceIntent = Intent(it, LocationService::class.java)
+        if (intent?.action == Intent.ACTION_BOOT_COMPLETED && context != null) {
+            try {
+                CrashLogger.log(context, "BOOT", "Boot completat - iniciant servei")
+                val serviceIntent = Intent(context, LocationService::class.java)
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    it.startForegroundService(serviceIntent)
+                    context.startForegroundService(serviceIntent)
                 } else {
-                    it.startService(serviceIntent)
+                    context.startService(serviceIntent)
                 }
-
+                CrashLogger.log(context, "BOOT", "Servei iniciat correctament")
+            } catch (e: Exception) {
+                CrashLogger.logError(context, "BOOT", "Error iniciant servei al boot", e)
             }
         }
     }

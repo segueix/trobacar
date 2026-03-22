@@ -40,16 +40,20 @@ class LocationService : Service(), LocationListener {
             val prefs = getSharedPreferences("TrobaCar", Context.MODE_PRIVATE)
             val savedName = prefs.getString("default_bluetooth_device_name", null)
 
+            CrashLogger.log(this@LocationService, "BT", "Event BT: action=${intent.action}, device=$deviceName, saved=$savedName")
+
             if (savedName.isNullOrEmpty() || deviceName == null) return
 
             when (intent.action) {
                 BluetoothDevice.ACTION_ACL_CONNECTED -> {
                     if (deviceName == savedName) {
+                        CrashLogger.log(this@LocationService, "BT", "Bluetooth connectat: $deviceName")
                         prefs.edit().putBoolean("bluetooth_car_connected", true).apply()
                     }
                 }
                 BluetoothDevice.ACTION_ACL_DISCONNECTED -> {
                     if (deviceName == savedName) {
+                        CrashLogger.log(this@LocationService, "BT", "Bluetooth desconnectat: $deviceName - guardant ubicació")
                         prefs.edit().putBoolean("bluetooth_car_connected", false).apply()
                         saveCurrentLocation()
                     }
@@ -60,13 +64,21 @@ class LocationService : Service(), LocationListener {
 
     override fun onCreate() {
         super.onCreate()
-        locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        createNotificationChannel()
-        startForeground(NOTIFICATION_ID, createNotification())
-        registerBluetoothReceiver()
+        try {
+            CrashLogger.log(this, "SERVICE", "LocationService onCreate iniciat")
+            locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+            createNotificationChannel()
+            startForeground(NOTIFICATION_ID, createNotification())
+            registerBluetoothReceiver()
+            CrashLogger.log(this, "SERVICE", "LocationService onCreate completat")
+        } catch (e: Exception) {
+            CrashLogger.logError(this, "SERVICE", "Error a onCreate", e)
+            throw e
+        }
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        CrashLogger.log(this, "SERVICE", "onStartCommand cridat")
         startLocationUpdates()
         return START_STICKY
     }
@@ -89,7 +101,7 @@ class LocationService : Service(), LocationListener {
                 this
             )
         } catch (e: SecurityException) {
-            e.printStackTrace()
+            CrashLogger.logError(this, "SERVICE", "SecurityException a startLocationUpdates", e)
         }
     }
 
@@ -122,6 +134,7 @@ class LocationService : Service(), LocationListener {
                 ?: locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
 
             if (location != null) {
+                CrashLogger.log(this, "SERVICE", "Guardant ubicació: ${location.latitude}, ${location.longitude}")
                 val prefs = getSharedPreferences("TrobaCar", Context.MODE_PRIVATE)
                 prefs.edit()
                     .putFloat("saved_latitude", location.latitude.toFloat())
@@ -132,9 +145,11 @@ class LocationService : Service(), LocationListener {
                     .apply()
 
                 LocationHistory.addLocation(this, location.latitude, location.longitude, "Bluetooth")
+            } else {
+                CrashLogger.log(this, "SERVICE", "saveCurrentLocation: no hi ha ubicació disponible")
             }
         } catch (e: SecurityException) {
-            e.printStackTrace()
+            CrashLogger.logError(this, "SERVICE", "SecurityException a saveCurrentLocation", e)
         }
     }
 
@@ -169,6 +184,7 @@ class LocationService : Service(), LocationListener {
         .build()
 
     override fun onDestroy() {
+        CrashLogger.log(this, "SERVICE", "LocationService onDestroy")
         super.onDestroy()
         locationManager.removeUpdates(this)
         if (isBluetoothReceiverRegistered) {
@@ -190,7 +206,7 @@ class LocationService : Service(), LocationListener {
                 applicationContext.startService(restartIntent)
             }
         } catch (exception: RuntimeException) {
-            // Android 12+ may block this restart when the user closes the app
+            CrashLogger.logError(this, "SERVICE", "No s'ha pogut reiniciar el servei (Android 12+)", exception)
         }
 
         super.onTaskRemoved(rootIntent)
