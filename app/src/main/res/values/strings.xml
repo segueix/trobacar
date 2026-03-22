@@ -1,18 +1,18 @@
 <resources>
     <string name="app_name">PinPark</string>
-    <string name="subtitle">Troba el teu cotxe a l&apos;instant</string>
+    <string name="subtitle">Troba el teu cotxe a l\'instant</string>
     <string name="gps">GPS</string>
     <string name="car">Cotxe</string>
     <string name="saved_location">Ubicació guardada</string>
     <string name="tap_to_open_map">Toca per obrir al mapa</string>
-    <string name="no_location_saved">Encara no s&apos;ha guardat cap ubicació\n\nL&apos;app detectarà automàticament quan surts del cotxe</string>
-    <string name="location_history">Historial d&apos;ubicacions</string>
+    <string name="no_location_saved">Encara no s\'ha guardat cap ubicació\n\nL\'app detectarà automàticament quan surts del cotxe</string>
+    <string name="location_history">Historial d\'ubicacions</string>
     <string name="view_past_parking">Veure aparcaments anteriors</string>
     <string name="history">Historial</string>
     <string name="dark">Fosc</string>
-    <string name="delete_all_history">🗑️ Esborrar tot l&apos;historial</string>
-    <string name="no_history">No hi ha historial d&apos;ubicacions</string>
-    <string name="delete_confirmation">Vols esborrar tot l&apos;historial?</string>
+    <string name="delete_all_history">🗑️ Esborrar tot l\'historial</string>
+    <string name="no_history">No hi ha historial d\'ubicacions</string>
+    <string name="delete_confirmation">Vols esborrar tot l\'historial?</string>
     <string name="delete">Esborrar</string>
     <string name="cancel">Cancel·lar</string>
     <string name="open_with">Obrir amb...</string>
@@ -24,7 +24,7 @@
     <string name="save">Guardar</string>
     <string name="location_name_updated">Nom actualitzat</string>
     <string name="bluetooth_section_title">Bluetooth del cotxe</string>
-    <string name="bluetooth_section_help">Escaneja els dispositius del voltant, selecciona el del cotxe i, quan estigui connectat al telèfon, guarda&apos;l com a predeterminat.</string>
+    <string name="bluetooth_section_help">Escaneja els dispositius del voltant, selecciona el del cotxe i, quan estigui connectat al telèfon, guarda\'l com a predeterminat.</string>
     <string name="bluetooth_not_supported">Aquest mòbil no té Bluetooth compatible</string>
     <string name="bluetooth_disabled">Bluetooth desactivat</string>
     <string name="bluetooth_not_connected">Cap dispositiu Bluetooth connectat</string>
@@ -38,9 +38,9 @@
     <string name="connect_before_saving">Connecta el mòbil al cotxe per guardar-lo</string>
     <string name="bluetooth_permissions_needed">Cal donar permisos de Bluetooth per buscar dispositius</string>
     <string name="bluetooth_enable_first">Activa el Bluetooth per continuar</string>
-    <string name="bluetooth_scan_failed">No s&apos;ha pogut iniciar la cerca Bluetooth</string>
+    <string name="bluetooth_scan_failed">No s\'ha pogut iniciar la cerca Bluetooth</string>
     <string name="unnamed_bluetooth_device">Dispositiu sense nom</string>
     <string name="select_bluetooth_device">Selecciona un dispositiu Bluetooth</string>
-    <string name="bluetooth_must_be_connected">Aquest dispositiu ha d&apos;estar connectat abans de guardar-lo</string>
+    <string name="bluetooth_must_be_connected">Aquest dispositiu ha d\'estar connectat abans de guardar-lo</string>
     <string name="bluetooth_default_saved">Bluetooth predeterminat guardat</string>
 </resources>
