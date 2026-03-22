@@ -33,6 +33,27 @@ Aplicació Android per trobar el teu cotxe després de desconnectar-te d'Android
 - GPS activat per obtenir ubicacions precises
 - Android Auto instal·lat i configurat
 
+## APK automàtic amb GitHub Actions
+
+El repositori ara pot generar un APK descarregable automàticament amb GitHub Actions.
+
+### Com funciona
+
+- El workflow **Build downloadable APK** s'executa manualment des de la pestanya **Actions** amb **Run workflow**.
+- També s'executa automàticament quan hi ha un `push` a `main` o `master`, i a cada `pull request`.
+- GitHub prepara una màquina Ubuntu, instal·la Java 17 i executa `./gradlew assembleDebug`.
+- Quan acaba, puja l'arxiu `app-debug.apk` com a artefacte amb el nom **trobacar-debug-apk**.
+- Pots descarregar aquest APK des de la secció **Artifacts** de l'execució del workflow.
+
+### On descarregar-lo
+
+1. Ves al repositori a GitHub.
+2. Obre la pestanya **Actions**.
+3. Entra a l'execució de **Build downloadable APK**.
+4. A la part final de la pàgina, descarrega l'artefacte **trobacar-debug-apk**.
+
+> Nota: aquest workflow genera un APK de **debug**, ideal per provar-lo ràpidament. Si vols un APK de **release** signat i llest per distribuir, caldrà afegir una keystore com a secret del repositori.
+
 ## Instal·lació
 
 1. Obre el projecte amb Android Studio
