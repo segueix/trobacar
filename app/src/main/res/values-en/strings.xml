@@ -22,4 +22,25 @@
     <string name="parking">Parking</string>
     <string name="edit_name">Edit name</string>
     <string name="save">Save</string>
+    <string name="location_name_updated">Name updated</string>
+    <string name="bluetooth_section_title">Car Bluetooth</string>
+    <string name="bluetooth_section_help">Scan nearby devices, select your car, and once the phone is connected you can save it as the default one.</string>
+    <string name="bluetooth_not_supported">This phone does not support compatible Bluetooth features</string>
+    <string name="bluetooth_disabled">Bluetooth is turned off</string>
+    <string name="bluetooth_not_connected">No Bluetooth device connected</string>
+    <string name="bluetooth_connected_generic">A Bluetooth device is connected</string>
+    <string name="bluetooth_connected_to">Connected to %1$s</string>
+    <string name="bluetooth_default_not_set">No default Bluetooth device configured</string>
+    <string name="bluetooth_default_device">Default: %1$s</string>
+    <string name="scan_bluetooth">Scan nearby Bluetooth</string>
+    <string name="scanning_bluetooth">Scanning devices...</string>
+    <string name="save_default_bluetooth">Save as default</string>
+    <string name="connect_before_saving">Connect the phone to the car before saving</string>
+    <string name="bluetooth_permissions_needed">Bluetooth permissions are required to scan devices</string>
+    <string name="bluetooth_enable_first">Turn on Bluetooth to continue</string>
+    <string name="bluetooth_scan_failed">Bluetooth scan could not be started</string>
+    <string name="unnamed_bluetooth_device">Unnamed device</string>
+    <string name="select_bluetooth_device">Select a Bluetooth device</string>
+    <string name="bluetooth_must_be_connected">This device must be connected before saving it</string>
+    <string name="bluetooth_default_saved">Default Bluetooth saved</string>
 </resources>

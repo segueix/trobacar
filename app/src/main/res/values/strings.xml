@@ -22,4 +22,25 @@
     <string name="parking">Aparcament</string>
     <string name="edit_name">Editar nom</string>
     <string name="save">Guardar</string>
+    <string name="location_name_updated">Nom actualitzat</string>
+    <string name="bluetooth_section_title">Bluetooth del cotxe</string>
+    <string name="bluetooth_section_help">Escaneja els dispositius del voltant, selecciona el del cotxe i, quan estigui connectat al telèfon, guarda'l com a predeterminat.</string>
+    <string name="bluetooth_not_supported">Aquest mòbil no té Bluetooth compatible</string>
+    <string name="bluetooth_disabled">Bluetooth desactivat</string>
+    <string name="bluetooth_not_connected">Cap dispositiu Bluetooth connectat</string>
+    <string name="bluetooth_connected_generic">Hi ha un dispositiu Bluetooth connectat</string>
+    <string name="bluetooth_connected_to">Connectat a %1$s</string>
+    <string name="bluetooth_default_not_set">No hi ha cap Bluetooth predeterminat configurat</string>
+    <string name="bluetooth_default_device">Predeterminat: %1$s</string>
+    <string name="scan_bluetooth">Buscar Bluetooth propers</string>
+    <string name="scanning_bluetooth">Buscant dispositius...</string>
+    <string name="save_default_bluetooth">Guardar com a predeterminat</string>
+    <string name="connect_before_saving">Connecta el mòbil al cotxe per guardar-lo</string>
+    <string name="bluetooth_permissions_needed">Cal donar permisos de Bluetooth per buscar dispositius</string>
+    <string name="bluetooth_enable_first">Activa el Bluetooth per continuar</string>
+    <string name="bluetooth_scan_failed">No s'ha pogut iniciar la cerca Bluetooth</string>
+    <string name="unnamed_bluetooth_device">Dispositiu sense nom</string>
+    <string name="select_bluetooth_device">Selecciona un dispositiu Bluetooth</string>
+    <string name="bluetooth_must_be_connected">Aquest dispositiu ha d'estar connectat abans de guardar-lo</string>
+    <string name="bluetooth_default_saved">Bluetooth predeterminat guardat</string>
 </resources>
