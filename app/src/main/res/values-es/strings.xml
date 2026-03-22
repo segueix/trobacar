@@ -17,7 +17,7 @@
     <string name="cancel">Cancelar</string>
     <string name="open_with">Abrir con...</string>
     <string name="no_map_apps">No hay apps de mapas disponibles</string>
-    <string name="location_saved">✓ Ubicación guardada (%s) - %s</string>
+    <string name="location_saved">✓ Ubicación guardada (%1$s) - %2$s</string>
     <string name="current_parking">Aparcamiento actual</string>
     <string name="parking">Aparcamiento</string>
     <string name="edit_name">Editar nombre</string>
