@@ -1,12 +1,16 @@
 package cat.edealae.trobacar
 
+import android.Manifest
 import android.bluetooth.BluetoothDevice
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationManager
+import android.os.Build
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 
 class BluetoothReceiver : BroadcastReceiver() {
 
@@ -17,12 +21,23 @@ class BluetoothReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
         if (context == null || intent == null) return
 
-        val action = intent.action
+        val action = intent.action ?: return
+        if (action != BluetoothDevice.ACTION_ACL_CONNECTED && action != BluetoothDevice.ACTION_ACL_DISCONNECTED) {
+            return
+        }
+
+        if (!hasBluetoothConnectPermission(context)) {
+            return
+        }
+
         val device: BluetoothDevice? = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
-        
         if (device == null) return
 
-        val deviceName = device.name ?: return
+        val deviceName = try {
+            device.name
+        } catch (securityException: SecurityException) {
+            null
+        } ?: return
         val prefs = context.getSharedPreferences("TrobaCar", Context.MODE_PRIVATE)
 
         // Només processar si és el nostre cotxe
@@ -44,6 +59,14 @@ class BluetoothReceiver : BroadcastReceiver() {
                 }
             }
         }
+    }
+
+    private fun hasBluetoothConnectPermission(context: Context): Boolean {
+        return Build.VERSION.SDK_INT < Build.VERSION_CODES.S ||
+            ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.BLUETOOTH_CONNECT
+            ) == PackageManager.PERMISSION_GRANTED
     }
 
     private fun saveCurrentLocation(context: Context, method: String) {

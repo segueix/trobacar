@@ -35,12 +35,20 @@ class MainActivity : AppCompatActivity() {
     private val locationPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
-        if (permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true ||
-            permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true) {
+        val hasLocationPermission = permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true ||
+            permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true
+        val activityRecognitionGranted = Build.VERSION.SDK_INT < Build.VERSION_CODES.Q ||
+            permissions[Manifest.permission.ACTIVITY_RECOGNITION] != false
+
+        if (hasLocationPermission) {
             startLocationService()
             updateUI()
         } else {
             Toast.makeText(this, "Permisos de localització necessaris", Toast.LENGTH_LONG).show()
+        }
+
+        if (activityRecognitionGranted) {
+            ActivityRecognitionHelper.startActivityRecognition(this)
         }
     }
 
@@ -89,9 +97,6 @@ class MainActivity : AppCompatActivity() {
 
         // Demanar permisos si cal
         checkAndRequestPermissions()
-        
-        // Iniciar Activity Recognition
-        ActivityRecognitionHelper.startActivityRecognition(this)
     }
 
     override fun onResume() {
@@ -148,6 +153,7 @@ class MainActivity : AppCompatActivity() {
             locationPermissionLauncher.launch(permissionsToRequest.toTypedArray())
         } else {
             startLocationService()
+            ActivityRecognitionHelper.startActivityRecognition(this)
         }
     }
 

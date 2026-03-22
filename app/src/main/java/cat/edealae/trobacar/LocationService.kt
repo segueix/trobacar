@@ -103,16 +103,21 @@ class LocationService : Service(), LocationListener {
     }
 
     override fun onTaskRemoved(rootIntent: Intent?) {
-        // Si el sistema tanca l'app en segon pla, intentar reiniciar el servei per mantenir-lo actiu
+        // En Android recents, aquest reinici pot llençar excepcions de restricció de FGS.
+        // El servei ja retorna START_STICKY a onStartCommand, així que evitem un crash extra.
         val restartIntent = Intent(applicationContext, LocationService::class.java).apply {
             `package` = packageName
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            applicationContext.startForegroundService(restartIntent)
-        } else {
-            @Suppress("DEPRECATION")
-            applicationContext.startService(restartIntent)
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                applicationContext.startForegroundService(restartIntent)
+            } else {
+                @Suppress("DEPRECATION")
+                applicationContext.startService(restartIntent)
+            }
+        } catch (exception: RuntimeException) {
+            // Ignorar: Android 12+ pot bloquejar aquest reinici quan l'usuari tanca l'app.
         }
 
         super.onTaskRemoved(rootIntent)

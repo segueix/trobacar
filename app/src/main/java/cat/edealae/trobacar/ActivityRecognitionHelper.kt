@@ -1,20 +1,35 @@
 package cat.edealae.trobacar
 
+import android.Manifest
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationManager
+import android.os.Build
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import com.google.android.gms.location.ActivityRecognition
 import com.google.android.gms.location.ActivityTransition
 import com.google.android.gms.location.ActivityTransitionRequest
 import com.google.android.gms.location.DetectedActivity
 
 object ActivityRecognitionHelper {
+
+    fun hasActivityRecognitionPermission(context: Context): Boolean {
+        return Build.VERSION.SDK_INT < Build.VERSION_CODES.Q ||
+            ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACTIVITY_RECOGNITION
+            ) == PackageManager.PERMISSION_GRANTED
+    }
     
     fun startActivityRecognition(context: Context) {
+        if (!hasActivityRecognitionPermission(context)) {
+            return
+        }
         val transitions = mutableListOf<ActivityTransition>()
         
         // Detectar quan ENTRES al vehicle
@@ -40,7 +55,7 @@ object ActivityRecognitionHelper {
             context,
             0,
             intent,
-            PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
         
         try {
@@ -52,12 +67,15 @@ object ActivityRecognitionHelper {
     }
     
     fun stopActivityRecognition(context: Context) {
+        if (!hasActivityRecognitionPermission(context)) {
+            return
+        }
         val intent = Intent(context, ActivityTransitionReceiver::class.java)
         val pendingIntent = PendingIntent.getBroadcast(
             context,
             0,
             intent,
-            PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
         
         try {
