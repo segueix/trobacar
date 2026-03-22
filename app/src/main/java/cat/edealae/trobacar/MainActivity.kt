@@ -14,6 +14,7 @@ import android.os.Build
 import android.os.Bundle
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -58,8 +59,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        try {
         applyTheme()
         super.onCreate(savedInstanceState)
+        CrashLogger.log(this, "MAIN", "MainActivity onCreate iniciat")
         setContentView(R.layout.activity_main)
         supportActionBar?.hide()
 
@@ -81,9 +84,15 @@ class MainActivity : AppCompatActivity() {
         openMapsButton.setOnClickListener { openSavedLocationInMaps() }
         shareButton.setOnClickListener { shareLocation() }
         historyButton.setOnClickListener { startActivity(Intent(this, HistoryActivity::class.java)) }
+        findViewById<CardView>(R.id.errorLogButton).setOnClickListener { showErrorLogDialog() }
         saveBluetoothButton.setOnClickListener { saveBluetoothDeviceName() }
 
         checkAndRequestPermissions()
+        CrashLogger.log(this, "MAIN", "MainActivity onCreate completat")
+        } catch (e: Exception) {
+            CrashLogger.logError(this, "MAIN", "Error a onCreate", e)
+            throw e
+        }
     }
 
     override fun onResume() {
@@ -309,6 +318,41 @@ class MainActivity : AppCompatActivity() {
                 }
             }
             .setNegativeButton(getString(R.string.cancel), null)
+            .show()
+    }
+
+    private fun showErrorLogDialog() {
+        val logContent = CrashLogger.readLog(this)
+
+        val textView = TextView(this).apply {
+            text = logContent
+            setPadding(32, 24, 32, 24)
+            textSize = 11f
+            typeface = android.graphics.Typeface.MONOSPACE
+            setTextIsSelectable(true)
+        }
+
+        val scrollView = ScrollView(this).apply {
+            addView(textView)
+        }
+
+        AlertDialog.Builder(this)
+            .setTitle(getString(R.string.error_log_title))
+            .setView(scrollView)
+            .setPositiveButton(getString(R.string.error_log_close), null)
+            .setNeutralButton(getString(R.string.error_log_share)) { _, _ ->
+                val sendIntent = Intent().apply {
+                    action = Intent.ACTION_SEND
+                    putExtra(Intent.EXTRA_TEXT, logContent)
+                    putExtra(Intent.EXTRA_SUBJECT, "TrobaCar - Registre d'errors")
+                    type = "text/plain"
+                }
+                startActivity(Intent.createChooser(sendIntent, getString(R.string.open_with)))
+            }
+            .setNegativeButton(getString(R.string.error_log_clear)) { _, _ ->
+                CrashLogger.clearLog(this)
+                Toast.makeText(this, getString(R.string.error_log_cleared), Toast.LENGTH_SHORT).show()
+            }
             .show()
     }
 

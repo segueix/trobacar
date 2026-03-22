@@ -18,6 +18,7 @@ class AndroidAutoReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
         if (context == null || intent == null) return
 
+        CrashLogger.log(context, "AUTO", "AndroidAutoReceiver: action=${intent.action}")
         if (intent.action == "android.car.action.CAR_CONNECTION_STATUS") {
             handleCarConnection(context, intent)
         }
@@ -63,7 +64,7 @@ class AndroidAutoReceiver : BroadcastReceiver() {
                 LocationHistory.addLocation(context, location.latitude, location.longitude, "Android Auto")
             }
         } catch (e: SecurityException) {
-            e.printStackTrace()
+            CrashLogger.logError(context, "AUTO", "SecurityException a saveCurrentLocation", e)
         }
     }
 }
