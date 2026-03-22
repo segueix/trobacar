@@ -101,7 +101,9 @@ Si no vols instal·lar res localment, pots utilitzar serveis online:
    - CI/CD per a apps mòbils
 
 3. **GitHub Actions**
-   - Configura un workflow per compilar automàticament
+   - El repositori inclou el workflow `.github/workflows/build-apk.yml` per compilar automàticament el fitxer `app-debug.apk`
+   - Executa'l des de la pestanya **Actions** de GitHub o deixa que s'executi en un `push`/`pull request`
+   - Quan acabi, descarrega l'APK des de **Actions > Build APK > Artifacts > trobacar-debug-apk**
 
 ## Signar l'APK (per a Release)
 
