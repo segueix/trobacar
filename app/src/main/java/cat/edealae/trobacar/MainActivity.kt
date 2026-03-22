@@ -35,20 +35,12 @@ class MainActivity : AppCompatActivity() {
     private val locationPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
-        val hasLocationPermission = permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true ||
-            permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true
-        val activityRecognitionGranted = Build.VERSION.SDK_INT < Build.VERSION_CODES.Q ||
-            permissions[Manifest.permission.ACTIVITY_RECOGNITION] != false
-
-        if (hasLocationPermission) {
+        if (permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true ||
+            permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true) {
             startLocationService()
             updateUI()
         } else {
             Toast.makeText(this, "Permisos de localització necessaris", Toast.LENGTH_LONG).show()
-        }
-
-        if (activityRecognitionGranted) {
-            ActivityRecognitionHelper.startActivityRecognition(this)
         }
     }
 
@@ -135,25 +127,10 @@ class MainActivity : AppCompatActivity() {
             }
         }
         
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT)
-                != PackageManager.PERMISSION_GRANTED) {
-                permissionsToRequest.add(Manifest.permission.BLUETOOTH_CONNECT)
-            }
-        }
-        
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACTIVITY_RECOGNITION)
-                != PackageManager.PERMISSION_GRANTED) {
-                permissionsToRequest.add(Manifest.permission.ACTIVITY_RECOGNITION)
-            }
-        }
-
         if (permissionsToRequest.isNotEmpty()) {
             locationPermissionLauncher.launch(permissionsToRequest.toTypedArray())
         } else {
             startLocationService()
-            ActivityRecognitionHelper.startActivityRecognition(this)
         }
     }
 
@@ -175,17 +152,12 @@ class MainActivity : AppCompatActivity() {
             if (isGpsEnabled) R.drawable.ic_circle_green else R.drawable.ic_circle_red
         )
 
-        // Actualitzar indicador (mostra Bluetooth o Activity o Android Auto)
+        // Actualitzar indicador d'Android Auto
         val prefs = getSharedPreferences("TrobaCar", Context.MODE_PRIVATE)
-        val bluetoothConnected = prefs.getBoolean("bluetooth_connected", false)
-        val inVehicle = prefs.getBoolean("in_vehicle", false)
         val androidAutoConnected = prefs.getBoolean("android_auto_connected", false)
-        
-        // Mostrar verd si qualsevol està actiu
-        val isConnected = bluetoothConnected || inVehicle || androidAutoConnected
-        
+
         androidAutoIndicator.setImageResource(
-            if (isConnected) R.drawable.ic_circle_green else R.drawable.ic_circle_red
+            if (androidAutoConnected) R.drawable.ic_circle_green else R.drawable.ic_circle_red
         )
 
         // Actualitzar ubicació guardada

@@ -16,7 +16,7 @@ Aplicació Android per trobar el teu cotxe després de desconnectar-te d'Android
 
 1. L'aplicació s'executa en segon pla amb un servei de localització
 2. L'app s'inicia automàticament quan encens el mòbil
-3. Quan connectes el mòbil a Android Auto (via cable o Bluetooth):
+3. Quan connectes el mòbil a Android Auto:
    - L'indicador d'Android Auto es posa en verd
    - S'esborra qualsevol ubicació guardada anteriorment
 4. Quan desconnectes el mòbil d'Android Auto:
