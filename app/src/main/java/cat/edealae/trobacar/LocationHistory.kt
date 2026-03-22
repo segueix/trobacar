@@ -11,7 +11,7 @@ data class LocationEntry(
     val latitude: Double,
     val longitude: Double,
     val timestamp: Long,
-    val method: String = "Manual", // Bluetooth, Activity, Android Auto, Manual
+    val method: String = "Manual", // Android Auto o Manual
     var customName: String = "Aparcament" // Nom personalitzat
 ) {
     fun getFormattedDate(): String {
@@ -25,8 +25,6 @@ data class LocationEntry(
     
     fun getMethodIcon(): String {
         return when(method) {
-            "Bluetooth" -> "🔵"
-            "Activity" -> "🚶"
             "Android Auto" -> "🚗"
             else -> "📍"
         }

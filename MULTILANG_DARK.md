@@ -289,8 +289,6 @@ mkdir app/src/main/res/values-fr
 ## 🔮 Funcionalitats Mantingudes
 
 **Tot funciona igual:**
-- ✅ Detecció Bluetooth
-- ✅ Activity Recognition
 - ✅ Android Auto
 - ✅ 4 colors temàtics
 - ✅ Historial de 50 ubicacions

@@ -40,13 +40,13 @@
 - 📋 **Header modern** amb títol gran
 - 🎨 **Selector de temes visible** (4 colors + mode fosc)
 - 🗂️ **Targetes individuals** per cada ubicació
-- 🎯 **Icones per mètode** (Bluetooth, Activity, Android Auto)
+- 🎯 **Icones per mètode** (Android Auto)
 - ↗️ **Fletxa d'acció** a cada targeta
 
 **Layout de cada entrada:**
 ```
 ┌─────────────────────────────────┐
-│ [🔵] Bluetooth - 19/12 16:15   │
+│ [🚗] Android Auto - 19/12 16:15 │
 │      Lat: 41.682943             │
 │      Lon: 2.287330         →    │
 └─────────────────────────────────┘
@@ -57,8 +57,6 @@
 ## 🎯 Funcionalitats Mantingudes
 
 **Tot funciona igual que abans:**
-- ✅ Detecció per Bluetooth (MYCAR)
-- ✅ Detecció per Activity Recognition
 - ✅ Detecció per Android Auto
 - ✅ Agrupació automàtica de pins propers
 - ✅ Historial de 50 ubicacions

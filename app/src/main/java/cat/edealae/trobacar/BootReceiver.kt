@@ -16,9 +16,7 @@ class BootReceiver : BroadcastReceiver() {
                 } else {
                     it.startService(serviceIntent)
                 }
-                
-                // Iniciar Activity Recognition
-                ActivityRecognitionHelper.startActivityRecognition(it)
+
             }
         }
     }
