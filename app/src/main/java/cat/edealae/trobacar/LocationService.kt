@@ -1,12 +1,16 @@
 package cat.edealae.trobacar
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
+import android.bluetooth.BluetoothDevice
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationListener
@@ -21,12 +25,45 @@ class LocationService : Service(), LocationListener {
     private lateinit var locationManager: LocationManager
     private val NOTIFICATION_ID = 1
     private val CHANNEL_ID = "TrobaCarLocationChannel"
+    private var isBluetoothReceiverRegistered = false
+
+    private val bluetoothReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            if (context == null || intent == null) return
+            val device: BluetoothDevice? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE, BluetoothDevice::class.java)
+            } else {
+                @Suppress("DEPRECATION")
+                intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
+            }
+            val deviceName = if (hasBluetoothConnectPermission()) device?.name else null
+            val prefs = getSharedPreferences("TrobaCar", Context.MODE_PRIVATE)
+            val savedName = prefs.getString("default_bluetooth_device_name", null)
+
+            if (savedName.isNullOrEmpty() || deviceName == null) return
+
+            when (intent.action) {
+                BluetoothDevice.ACTION_ACL_CONNECTED -> {
+                    if (deviceName == savedName) {
+                        prefs.edit().putBoolean("bluetooth_car_connected", true).apply()
+                    }
+                }
+                BluetoothDevice.ACTION_ACL_DISCONNECTED -> {
+                    if (deviceName == savedName) {
+                        prefs.edit().putBoolean("bluetooth_car_connected", false).apply()
+                        saveCurrentLocation()
+                    }
+                }
+            }
+        }
+    }
 
     override fun onCreate() {
         super.onCreate()
         locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
         createNotificationChannel()
         startForeground(NOTIFICATION_ID, createNotification())
+        registerBluetoothReceiver()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -35,20 +72,16 @@ class LocationService : Service(), LocationListener {
     }
 
     private fun startLocationUpdates() {
-        if (!hasLocationPermission()) {
-            // Sense permisos no podem continuar; esperarà a que l'Activity els demani de nou
-            return
-        }
+        if (!hasLocationPermission()) return
 
         try {
             locationManager.requestLocationUpdates(
                 LocationManager.GPS_PROVIDER,
-                5000L, // Actualitzar cada 5 segons
-                10f,   // O cada 10 metres
+                5000L,
+                10f,
                 this
             )
 
-            // Fallback a xarxa per mantenir l'actualització quan el GPS no està disponible
             locationManager.requestLocationUpdates(
                 LocationManager.NETWORK_PROVIDER,
                 5000L,
@@ -61,11 +94,49 @@ class LocationService : Service(), LocationListener {
     }
 
     override fun onLocationChanged(location: Location) {
-        // La ubicació actual està disponible però només es guarda quan es desconnecta d'Android Auto
-        // Això es gestiona al AndroidAutoReceiver
+        // Location is tracked continuously; saved only when Bluetooth car disconnects
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
+
+    private fun registerBluetoothReceiver() {
+        if (isBluetoothReceiverRegistered) return
+        val filter = IntentFilter().apply {
+            addAction(BluetoothDevice.ACTION_ACL_CONNECTED)
+            addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED)
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(bluetoothReceiver, filter, RECEIVER_EXPORTED)
+        } else {
+            registerReceiver(bluetoothReceiver, filter)
+        }
+        isBluetoothReceiverRegistered = true
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun saveCurrentLocation() {
+        if (!hasLocationPermission()) return
+
+        try {
+            val location: Location? = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+                ?: locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
+
+            if (location != null) {
+                val prefs = getSharedPreferences("TrobaCar", Context.MODE_PRIVATE)
+                prefs.edit()
+                    .putFloat("saved_latitude", location.latitude.toFloat())
+                    .putFloat("saved_longitude", location.longitude.toFloat())
+                    .putLong("saved_timestamp", System.currentTimeMillis())
+                    .putString("saved_method", "Bluetooth")
+                    .putString("location_name", getString(R.string.current_parking))
+                    .apply()
+
+                LocationHistory.addLocation(this, location.latitude, location.longitude, "Bluetooth")
+            }
+        } catch (e: SecurityException) {
+            e.printStackTrace()
+        }
+    }
 
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -84,7 +155,7 @@ class LocationService : Service(), LocationListener {
 
     private fun createNotification() = NotificationCompat.Builder(this, CHANNEL_ID)
         .setContentTitle("TrobaCar actiu")
-        .setContentText("Esperant desconnexió d'Android Auto")
+        .setContentText("Esperant desconnexió del Bluetooth del cotxe")
         .setSmallIcon(R.drawable.ic_notification)
         .setContentIntent(
             PendingIntent.getActivity(
@@ -100,11 +171,13 @@ class LocationService : Service(), LocationListener {
     override fun onDestroy() {
         super.onDestroy()
         locationManager.removeUpdates(this)
+        if (isBluetoothReceiverRegistered) {
+            unregisterReceiver(bluetoothReceiver)
+            isBluetoothReceiverRegistered = false
+        }
     }
 
     override fun onTaskRemoved(rootIntent: Intent?) {
-        // En Android recents, aquest reinici pot llençar excepcions de restricció de FGS.
-        // El servei ja retorna START_STICKY a onStartCommand, així que evitem un crash extra.
         val restartIntent = Intent(applicationContext, LocationService::class.java).apply {
             `package` = packageName
         }
@@ -117,23 +190,22 @@ class LocationService : Service(), LocationListener {
                 applicationContext.startService(restartIntent)
             }
         } catch (exception: RuntimeException) {
-            // Ignorar: Android 12+ pot bloquejar aquest reinici quan l'usuari tanca l'app.
+            // Android 12+ may block this restart when the user closes the app
         }
 
         super.onTaskRemoved(rootIntent)
     }
 
     private fun hasLocationPermission(): Boolean {
-        val fineGranted = ActivityCompat.checkSelfPermission(
-            this,
-            Manifest.permission.ACCESS_FINE_LOCATION
-        ) == PackageManager.PERMISSION_GRANTED
+        return ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+            ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
+    }
 
-        val coarseGranted = ActivityCompat.checkSelfPermission(
-            this,
-            Manifest.permission.ACCESS_COARSE_LOCATION
-        ) == PackageManager.PERMISSION_GRANTED
-
-        return fineGranted || coarseGranted
+    private fun hasBluetoothConnectPermission(): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED
+        } else {
+            true
+        }
     }
 }

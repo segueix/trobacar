@@ -283,47 +283,37 @@
                     android:textSize="14sp" />
 
                 <TextView
-                    android:id="@+id/bluetoothDefaultText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:text="@string/bluetooth_default_not_set"
-                    android:textColor="?android:attr/textColorSecondary"
-                    android:textSize="14sp" />
-
-                <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
-                    android:text="@string/bluetooth_section_help"
+                    android:text="@string/bluetooth_name_help"
                     android:textColor="?android:attr/textColorSecondary"
                     android:textSize="13sp" />
 
-                <ListView
-                    android:id="@+id/bluetoothListView"
-                    android:layout_width="match_parent"
-                    android:layout_height="220dp"
-                    android:layout_marginTop="16dp"
-                    android:choiceMode="singleChoice"
-                    android:dividerHeight="1dp" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/scanBluetoothButton"
+                <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:text="@string/scan_bluetooth"
-                    app:cornerRadius="12dp"
-                    style="@style/Widget.MaterialComponents.Button" />
+                    android:layout_marginTop="12dp"
+                    android:hint="@string/bluetooth_name_hint"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/bluetoothNameInput"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="text"
+                        android:maxLines="1" />
+
+                </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/saveBluetoothButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
-                    android:text="@string/connect_before_saving"
+                    android:text="@string/save_default_bluetooth"
                     app:cornerRadius="12dp"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+                    style="@style/Widget.MaterialComponents.Button" />
 
             </LinearLayout>
 
