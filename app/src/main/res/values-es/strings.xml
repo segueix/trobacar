@@ -46,4 +46,18 @@
     <string name="bluetooth_notification_connected_text">Conectado a %1$s</string>
     <string name="bluetooth_notification_disconnected_title">Bluetooth del coche desconectado</string>
     <string name="bluetooth_notification_disconnected_text">Desconectado de %1$s</string>
+    <string name="battery_help_title">Optimización de batería</string>
+    <string name="battery_help_subtitle">Ayuda para evitar que Android cierre la app en segundo plano</string>
+    <string name="battery_help_message">%1$s
+
+Consejo para tu móvil: %2$s</string>
+    <string name="battery_help_open_settings">Abrir configuración</string>
+    <string name="battery_help_open_failed">No se ha podido abrir la configuración de batería</string>
+    <string name="battery_help_already_disabled">La app ya parece estar excluida de la optimización de batería.</string>
+    <string name="battery_help_currently_enabled">La app puede verse afectada por la optimización de batería.</string>
+    <string name="battery_help_tip_xiaomi">En Xiaomi/Redmi/POCO suele hacer falta permitir inicio automático y poner la app sin restricciones en Batería.</string>
+    <string name="battery_help_tip_huawei">En Huawei/Honor revisa Inicio de aplicaciones y deja PinPark gestionada manualmente con ejecución en segundo plano permitida.</string>
+    <string name="battery_help_tip_oppo">En OPPO/realme/OnePlus/vivo revisa Batería y pon la app sin optimización o sin restricciones.</string>
+    <string name="battery_help_tip_samsung">En Samsung comprueba que la app no esté en Aplicaciones en suspensión y deja la batería sin restricciones.</string>
+    <string name="battery_help_tip_generic">En %1$s busca las opciones de Batería, optimización o restricciones en segundo plano y excluye PinPark si es posible.</string>
 </resources>

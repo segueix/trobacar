@@ -46,4 +46,18 @@
     <string name="bluetooth_notification_connected_text">Connected to %1$s</string>
     <string name="bluetooth_notification_disconnected_title">Car Bluetooth disconnected</string>
     <string name="bluetooth_notification_disconnected_text">Disconnected from %1$s</string>
+    <string name="battery_help_title">Battery optimization</string>
+    <string name="battery_help_subtitle">Help prevent Android from closing the app in the background</string>
+    <string name="battery_help_message">%1$s
+
+Tip for your phone: %2$s</string>
+    <string name="battery_help_open_settings">Open settings</string>
+    <string name="battery_help_open_failed">Could not open battery settings</string>
+    <string name="battery_help_already_disabled">The app already seems to be excluded from battery optimization.</string>
+    <string name="battery_help_currently_enabled">The app may still be affected by battery optimization.</string>
+    <string name="battery_help_tip_xiaomi">On Xiaomi/Redmi/POCO devices you usually need auto-start enabled and the app set to unrestricted battery use.</string>
+    <string name="battery_help_tip_huawei">On Huawei/Honor check App launch and manage PinPark manually with background activity allowed.</string>
+    <string name="battery_help_tip_oppo">On OPPO/realme/OnePlus/vivo check Battery settings and set the app to no optimization or unrestricted.</string>
+    <string name="battery_help_tip_samsung">On Samsung make sure the app is not in sleeping apps and set battery use to unrestricted.</string>
+    <string name="battery_help_tip_generic">On %1$s look for Battery, optimization, or background restriction settings and exclude PinPark if possible.</string>
 </resources>

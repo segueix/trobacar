@@ -17,6 +17,7 @@ import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Build
+import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
@@ -35,6 +36,11 @@ class LocationService : Service(), LocationListener {
         private const val NOTIFICATION_ID_FOREGROUND = 1
         private const val NOTIFICATION_ID_BT_CONNECTED = 2
         private const val NOTIFICATION_ID_BT_DISCONNECTED = 3
+        private const val MAX_LOCATION_AGE_MS = 2 * 60 * 1000L
+        private const val MAX_LOCATION_ACCURACY_METERS = 60f
+        private const val FALLBACK_LOCATION_AGE_MS = 5 * 60 * 1000L
+        private const val FALLBACK_LOCATION_ACCURACY_METERS = 150f
+        private const val FRESH_FIX_TIMEOUT_MS = 10_000L
 
         fun startService(context: Context, reason: String) {
             val intent = Intent(context, LocationService::class.java).apply {
@@ -177,6 +183,10 @@ class LocationService : Service(), LocationListener {
         // Location is tracked continuously; saved only when Bluetooth car disconnects
     }
 
+    override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
+        // Deprecated callback kept for backward compatibility
+    }
+
     override fun onBind(intent: Intent?): IBinder? = null
 
     private fun registerBluetoothReceiver() {
@@ -223,6 +233,12 @@ class LocationService : Service(), LocationListener {
                 return
             }
 
+            resolveBestLocationForSave { location ->
+                if (location != null) {
+                    persistLocation(location, now)
+                } else {
+                    CrashLogger.log(this, "SERVICE", "saveCurrentLocation: no hi ha ubicació prou bona disponible")
+                }
             val location: Location? = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
                 ?: locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
 
@@ -244,6 +260,149 @@ class LocationService : Service(), LocationListener {
             CrashLogger.logError(this, "SERVICE", "SecurityException a saveCurrentLocation", e)
         } catch (e: IllegalArgumentException) {
             CrashLogger.logError(this, "SERVICE", "Provider de localització no disponible a saveCurrentLocation", e)
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun resolveBestLocationForSave(callback: (Location?) -> Unit) {
+        val gpsLocation = getLastKnownLocationSafely(LocationManager.GPS_PROVIDER)
+        val networkLocation = getLastKnownLocationSafely(LocationManager.NETWORK_PROVIDER)
+        val bestLastKnown = selectBestLocation(listOfNotNull(gpsLocation, networkLocation))
+
+        if (bestLastKnown != null && isLocationGoodEnough(bestLastKnown)) {
+            CrashLogger.log(this, "SERVICE", "S'utilitza lastKnownLocation vàlida (${bestLastKnown.provider})")
+            callback(bestLastKnown)
+            return
+        }
+
+        CrashLogger.log(this, "SERVICE", "Cercant un fix més recent després de la desconnexió")
+        requestFreshLocationFix(bestLastKnown, callback)
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun requestFreshLocationFix(fallback: Location?, callback: (Location?) -> Unit) {
+        val candidateProviders = buildList {
+            if (isProviderEnabled(LocationManager.GPS_PROVIDER)) add(LocationManager.GPS_PROVIDER)
+            if (isProviderEnabled(LocationManager.NETWORK_PROVIDER)) add(LocationManager.NETWORK_PROVIDER)
+        }
+
+        if (candidateProviders.isEmpty()) {
+            callback(fallback?.takeIf(::isLocationFallbackUsable))
+            return
+        }
+
+        var completed = false
+        var bestLocation: Location? = fallback?.takeIf(::isLocationFallbackUsable)
+        lateinit var freshLocationListener: LocationListener
+
+        fun finish(result: Location?) {
+            if (completed) return
+            completed = true
+            mainHandler.removeCallbacksAndMessages(freshLocationListener)
+            try {
+                locationManager.removeUpdates(freshLocationListener)
+            } catch (_: Exception) {
+            }
+            callback(result)
+        }
+
+        val timeoutRunnable = Runnable {
+            val timeoutResult = bestLocation?.takeIf(::isLocationFallbackUsable)
+            if (timeoutResult != null) {
+                CrashLogger.log(this, "SERVICE", "Timeout obtenint fix recent; s'utilitza el millor candidat disponible")
+            } else {
+                CrashLogger.log(this, "SERVICE", "Timeout obtenint fix recent i sense candidat prou fiable")
+            }
+            finish(timeoutResult)
+        }
+
+        freshLocationListener = object : LocationListener {
+            override fun onLocationChanged(location: Location) {
+                if (bestLocation == null || isBetterLocation(location, bestLocation)) {
+                    bestLocation = location
+                }
+                if (isLocationGoodEnough(location)) {
+                    CrashLogger.log(this@LocationService, "SERVICE", "Fix recent acceptat (${location.provider}, ${location.accuracy}m)")
+                    finish(location)
+                }
+            }
+
+            override fun onProviderDisabled(provider: String) = Unit
+            override fun onProviderEnabled(provider: String) = Unit
+            override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) = Unit
+        }
+
+        candidateProviders.forEach { provider ->
+            try {
+                locationManager.requestLocationUpdates(provider, 0L, 0f, freshLocationListener, Looper.getMainLooper())
+            } catch (e: Exception) {
+                CrashLogger.logError(this, "SERVICE", "No s'ha pogut demanar un fix recent de $provider", e)
+            }
+        }
+        mainHandler.postAtTime(timeoutRunnable, freshLocationListener, System.currentTimeMillis() + FRESH_FIX_TIMEOUT_MS)
+    }
+
+    private fun getLastKnownLocationSafely(provider: String): Location? {
+        return try {
+            locationManager.getLastKnownLocation(provider)
+        } catch (_: SecurityException) {
+            null
+        } catch (_: IllegalArgumentException) {
+            null
+        }
+    }
+
+    private fun persistLocation(location: Location, timestamp: Long) {
+        CrashLogger.log(this, "SERVICE", "Guardant ubicació: ${location.latitude}, ${location.longitude} (${location.provider}, ${location.accuracy}m)")
+        val prefs = getSharedPreferences("TrobaCar", Context.MODE_PRIVATE)
+        prefs.edit()
+            .putFloat("saved_latitude", location.latitude.toFloat())
+            .putFloat("saved_longitude", location.longitude.toFloat())
+            .putLong("saved_timestamp", timestamp)
+            .putString("saved_method", "Bluetooth")
+            .putString("location_name", getString(R.string.current_parking))
+            .apply()
+
+        LocationHistory.addLocation(this, location.latitude, location.longitude, "Bluetooth")
+    }
+
+    private fun selectBestLocation(locations: List<Location>): Location? {
+        return locations.maxByOrNull { locationScore(it) }
+    }
+
+    private fun locationScore(location: Location): Double {
+        val agePenalty = locationAgeMs(location) / 1000.0
+        val accuracyPenalty = if (location.hasAccuracy()) location.accuracy.toDouble() else 25.0
+        val gpsBonus = if (location.provider == LocationManager.GPS_PROVIDER) 30.0 else 0.0
+        return gpsBonus - agePenalty - accuracyPenalty
+    }
+
+    private fun isBetterLocation(candidate: Location, currentBest: Location?): Boolean {
+        if (currentBest == null) return true
+        return locationScore(candidate) > locationScore(currentBest)
+    }
+
+    private fun isLocationGoodEnough(location: Location): Boolean {
+        val age = locationAgeMs(location)
+        val accuracy = if (location.hasAccuracy()) location.accuracy else MAX_LOCATION_ACCURACY_METERS
+        return age in 0..MAX_LOCATION_AGE_MS && accuracy <= MAX_LOCATION_ACCURACY_METERS
+    }
+
+    private fun isLocationFallbackUsable(location: Location): Boolean {
+        val age = locationAgeMs(location)
+        val accuracy = if (location.hasAccuracy()) location.accuracy else FALLBACK_LOCATION_ACCURACY_METERS
+        return age in 0..FALLBACK_LOCATION_AGE_MS && accuracy <= FALLBACK_LOCATION_ACCURACY_METERS
+    }
+
+    private fun locationAgeMs(location: Location): Long {
+        return System.currentTimeMillis() - location.time
+    }
+
+    private fun isProviderEnabled(provider: String): Boolean {
+        return try {
+            locationManager.isProviderEnabled(provider)
+        } catch (_: Exception) {
+            false
         }
     }
 

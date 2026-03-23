@@ -14,6 +14,7 @@ import android.content.pm.PackageManager
 import android.location.LocationManager
 import android.net.Uri
 import android.os.Build
+import android.os.PowerManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.widget.EditText
@@ -24,6 +25,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.ColorUtils
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 
@@ -47,6 +49,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private lateinit var statusCard: CardView
     private lateinit var gpsIndicator: ImageView
     private lateinit var androidAutoIndicator: ImageView
     private lateinit var locationCard: CardView
@@ -54,6 +57,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var locationName: TextView
     private lateinit var locationDateTime: TextView
     private lateinit var noLocationText: TextView
+    private lateinit var batteryOptimizationButton: CardView
     private lateinit var historyButton: CardView
     private lateinit var openMapsButton: MaterialButton
     private lateinit var shareButton: MaterialButton
@@ -88,6 +92,7 @@ class MainActivity : AppCompatActivity() {
             setContentView(R.layout.activity_main)
             supportActionBar?.hide()
 
+            statusCard = findViewById(R.id.statusCard)
             gpsIndicator = findViewById(R.id.gpsIndicator)
             androidAutoIndicator = findViewById(R.id.androidAutoIndicator)
             locationCard = findViewById(R.id.locationCard)
@@ -95,6 +100,7 @@ class MainActivity : AppCompatActivity() {
             locationName = findViewById(R.id.locationName)
             locationDateTime = findViewById(R.id.locationDateTime)
             noLocationText = findViewById(R.id.noLocationText)
+            batteryOptimizationButton = findViewById(R.id.batteryOptimizationButton)
             historyButton = findViewById(R.id.historyButton)
             openMapsButton = findViewById(R.id.openMapsButton)
             shareButton = findViewById(R.id.shareButton)
@@ -106,6 +112,7 @@ class MainActivity : AppCompatActivity() {
             locationName.setOnClickListener { showEditNameDialog() }
             openMapsButton.setOnClickListener { openSavedLocationInMaps() }
             shareButton.setOnClickListener { shareLocation() }
+            batteryOptimizationButton.setOnClickListener { showBatteryOptimizationHelp() }
             historyButton.setOnClickListener { startActivity(Intent(this, HistoryActivity::class.java)) }
             findViewById<CardView>(R.id.errorLogButton).setOnClickListener { showErrorLogDialog() }
             selectBluetoothButton.setOnClickListener { showBondedBluetoothDevicesDialog() }
@@ -205,6 +212,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateUI() {
+        applyStatusCardBackground()
+
         val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
         val isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
         gpsIndicator.setImageResource(
@@ -237,6 +246,75 @@ class MainActivity : AppCompatActivity() {
             locationCard.visibility = CardView.GONE
             noLocationText.visibility = TextView.VISIBLE
         }
+    }
+
+
+    private fun applyStatusCardBackground() {
+        val isDarkMode = prefs.getBoolean("dark_mode", false)
+        if (isDarkMode) {
+            statusCard.setCardBackgroundColor(ContextCompat.getColor(this, R.color.surface_elevated_dark))
+            return
+        }
+
+        val baseBackground = ContextCompat.getColor(this, R.color.background_light)
+        val accentColor = when (prefs.getString("theme_color", "blue")) {
+            "green" -> ContextCompat.getColor(this, R.color.primary_green_light)
+            "red" -> ContextCompat.getColor(this, R.color.primary_red_light)
+            "purple" -> ContextCompat.getColor(this, R.color.primary_purple_light)
+            else -> ContextCompat.getColor(this, R.color.primary_blue_light)
+        }
+
+        val tonedBackground = ColorUtils.blendARGB(baseBackground, accentColor, 0.18f)
+        statusCard.setCardBackgroundColor(tonedBackground)
+    }
+
+
+    private fun showBatteryOptimizationHelp() {
+        val manufacturer = Build.MANUFACTURER.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
+        val powerManager = getSystemService(Context.POWER_SERVICE) as PowerManager
+        val isIgnoringOptimizations = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            powerManager.isIgnoringBatteryOptimizations(packageName)
+        } else {
+            true
+        }
+
+        val manufacturerTip = when (Build.MANUFACTURER.lowercase()) {
+            "xiaomi", "redmi", "poco" -> getString(R.string.battery_help_tip_xiaomi)
+            "huawei", "honor" -> getString(R.string.battery_help_tip_huawei)
+            "oppo", "realme", "oneplus", "vivo" -> getString(R.string.battery_help_tip_oppo)
+            "samsung" -> getString(R.string.battery_help_tip_samsung)
+            else -> getString(R.string.battery_help_tip_generic, manufacturer)
+        }
+
+        val statusText = if (isIgnoringOptimizations) {
+            getString(R.string.battery_help_already_disabled)
+        } else {
+            getString(R.string.battery_help_currently_enabled)
+        }
+
+        AlertDialog.Builder(this)
+            .setTitle(R.string.battery_help_title)
+            .setMessage(getString(R.string.battery_help_message, statusText, manufacturerTip))
+            .setPositiveButton(R.string.battery_help_open_settings) { _, _ ->
+                openBatteryOptimizationSettings()
+            }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
+    }
+
+    private fun openBatteryOptimizationSettings() {
+        val intents = buildList {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                add(Intent(android.provider.Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
+            }
+            add(Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                data = Uri.parse("package:$packageName")
+            })
+        }
+
+        intents.firstOrNull { intent ->
+            intent.resolveActivity(packageManager) != null
+        }?.let { startActivity(it) } ?: Toast.makeText(this, R.string.battery_help_open_failed, Toast.LENGTH_SHORT).show()
     }
 
     private fun updateBluetoothSection() {
