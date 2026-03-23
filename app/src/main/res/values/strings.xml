@@ -47,4 +47,24 @@
     <string name="error_log_share">Compartir</string>
     <string name="error_log_close">Tancar</string>
     <string name="location_service_unavailable">No s\'ha pogut activar el seguiment en segon pla. Obre l\'app i comprova els permisos.</string>
+    <string name="error_log_copy">Copiar</string>
+    <string name="error_log_copied">Registre copiat al porta-retalls</string>
+    <string name="bluetooth_notification_connected_title">Bluetooth del cotxe connectat</string>
+    <string name="bluetooth_notification_connected_text">Connectat a %1$s</string>
+    <string name="bluetooth_notification_disconnected_title">Bluetooth del cotxe desconnectat</string>
+    <string name="bluetooth_notification_disconnected_text">Desconnectat de %1$s</string>
+    <string name="battery_help_title">Optimització de bateria</string>
+    <string name="battery_help_subtitle">Ajuda per evitar que Android tanqui l'app en segon pla</string>
+    <string name="battery_help_message">%1$s
+
+Consell per al teu mòbil: %2$s</string>
+    <string name="battery_help_open_settings">Obrir configuració</string>
+    <string name="battery_help_open_failed">No s'ha pogut obrir la configuració de bateria</string>
+    <string name="battery_help_already_disabled">L'app ja sembla exclosa de l'optimització de bateria.</string>
+    <string name="battery_help_currently_enabled">L'app pot estar afectada per l'optimització de bateria.</string>
+    <string name="battery_help_tip_xiaomi">A Xiaomi/Redmi/POCO sol caldre permetre inici automàtic i posar l'app sense restriccions a Bateria.</string>
+    <string name="battery_help_tip_huawei">A Huawei/Honor revisa Inici d'apps i deixa PinPark gestionada manualment amb execució en segon pla permesa.</string>
+    <string name="battery_help_tip_oppo">A OPPO/realme/OnePlus/vivo revisa Bateria i posa l'app a sense optimització o sense restriccions.</string>
+    <string name="battery_help_tip_samsung">A Samsung comprova que l'app no estigui a Aplicacions en suspens i deixa la bateria sense restriccions.</string>
+    <string name="battery_help_tip_generic">A %1$s busca les opcions de Bateria, optimització o restriccions en segon pla i exclou PinPark si és possible.</string>
 </resources>
