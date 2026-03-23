@@ -24,7 +24,7 @@
     <string name="save">Guardar</string>
     <string name="location_name_updated">Nom actualitzat</string>
     <string name="bluetooth_section_title">Bluetooth del cotxe</string>
-    <string name="bluetooth_name_help">Escriu el nom del Bluetooth del teu cotxe. Quan es desconnecti, l\'app guardarà la ubicació automàticament.</string>
+    <string name="bluetooth_name_help">Pots escriure el nom del Bluetooth del cotxe o seleccionar-lo de la llista de dispositius vinculats. Quan es desconnecti, l\'app guardarà la ubicació automàticament.</string>
     <string name="bluetooth_name_hint">Nom del Bluetooth (p. ex. Car Audio)</string>
     <string name="bluetooth_name_empty">Escriu el nom del Bluetooth del cotxe</string>
     <string name="bluetooth_not_supported">Aquest mòbil no té Bluetooth compatible</string>
@@ -35,6 +35,10 @@
     <string name="bluetooth_default_device">Predeterminat: %1$s</string>
     <string name="save_default_bluetooth">Guardar com a predeterminat</string>
     <string name="bluetooth_default_saved">Bluetooth predeterminat guardat</string>
+    <string name="select_paired_bluetooth">Seleccionar Bluetooth vinculat</string>
+    <string name="bluetooth_select_dialog_title">Escull el Bluetooth del cotxe</string>
+    <string name="bluetooth_no_paired_devices">No hi ha dispositius Bluetooth vinculats</string>
+    <string name="bluetooth_permission_required">Cal el permís de Bluetooth per veure els dispositius vinculats</string>
     <string name="error_log_title">Registre d\'errors</string>
     <string name="error_log_subtitle">Consulta els errors de l\'aplicació</string>
     <string name="error_log_empty">Sense errors registrats</string>

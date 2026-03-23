@@ -3,8 +3,8 @@ package cat.edealae.trobacar
 import android.Manifest
 import android.app.AlertDialog
 import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
-import android.bluetooth.BluetoothProfile
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -38,6 +38,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var shareButton: MaterialButton
     private lateinit var bluetoothStatusText: TextView
     private lateinit var bluetoothNameInput: TextInputEditText
+    private lateinit var selectBluetoothButton: MaterialButton
     private lateinit var saveBluetoothButton: MaterialButton
 
     private val bluetoothManager by lazy {
@@ -78,6 +79,7 @@ class MainActivity : AppCompatActivity() {
         shareButton = findViewById(R.id.shareButton)
         bluetoothStatusText = findViewById(R.id.bluetoothStatusText)
         bluetoothNameInput = findViewById(R.id.bluetoothNameInput)
+        selectBluetoothButton = findViewById(R.id.selectBluetoothButton)
         saveBluetoothButton = findViewById(R.id.saveBluetoothButton)
 
         locationName.setOnClickListener { showEditNameDialog() }
@@ -85,6 +87,7 @@ class MainActivity : AppCompatActivity() {
         shareButton.setOnClickListener { shareLocation() }
         historyButton.setOnClickListener { startActivity(Intent(this, HistoryActivity::class.java)) }
         findViewById<CardView>(R.id.errorLogButton).setOnClickListener { showErrorLogDialog() }
+        selectBluetoothButton.setOnClickListener { showBondedBluetoothDevicesDialog() }
         saveBluetoothButton.setOnClickListener { saveBluetoothDeviceName() }
 
         checkAndRequestPermissions()
@@ -168,6 +171,14 @@ class MainActivity : AppCompatActivity() {
             ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
     }
 
+    private fun hasBluetoothConnectPermission(): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED
+        } else {
+            true
+        }
+    }
+
     private fun updateUI() {
         val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
         val isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
@@ -207,50 +218,63 @@ class MainActivity : AppCompatActivity() {
     private fun updateBluetoothSection() {
         val prefs = getSharedPreferences("TrobaCar", Context.MODE_PRIVATE)
         val savedName = prefs.getString("default_bluetooth_device_name", null)
+        val bluetoothConnected = prefs.getBoolean("bluetooth_car_connected", false)
 
-        // Show saved name in input field
         if (bluetoothNameInput.text.isNullOrEmpty() && !savedName.isNullOrEmpty()) {
             bluetoothNameInput.setText(savedName)
         }
 
-        // Update status text
-        val hasBluetoothConnect = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED
-        } else {
-            true
-        }
-
-        val connectedDeviceName = if (hasBluetoothConnect) getConnectedBluetoothName(savedName) else null
-
         bluetoothStatusText.text = when {
             bluetoothAdapter == null -> getString(R.string.bluetooth_not_supported)
             bluetoothAdapter?.isEnabled != true -> getString(R.string.bluetooth_disabled)
-            connectedDeviceName != null -> getString(R.string.bluetooth_connected_to, connectedDeviceName)
-            savedName != null -> getString(R.string.bluetooth_not_connected)
-            else -> getString(R.string.bluetooth_default_not_set)
+            savedName.isNullOrEmpty() -> getString(R.string.bluetooth_default_not_set)
+            bluetoothConnected -> getString(R.string.bluetooth_connected_to, savedName)
+            else -> getString(R.string.bluetooth_default_device, savedName)
         }
     }
 
     @android.annotation.SuppressLint("MissingPermission")
-    private fun getConnectedBluetoothName(preferredName: String?): String? {
-        val adapter = bluetoothAdapter ?: return null
-        if (!adapter.isEnabled) return null
+    private fun getBondedBluetoothDevices(): List<BluetoothDevice> {
+        val adapter = bluetoothAdapter ?: return emptyList()
+        if (!adapter.isEnabled || !hasBluetoothConnectPermission()) return emptyList()
 
-        for (profile in listOf(BluetoothProfile.HEADSET, BluetoothProfile.A2DP)) {
-            val devices = try {
-                bluetoothManager.getConnectedDevices(profile)
-            } catch (e: IllegalArgumentException) {
-                CrashLogger.logError(this, "BT", "Perfil Bluetooth no suportat: $profile", e)
-                emptyList()
-            }
+        return adapter.bondedDevices
+            ?.filter { !it.name.isNullOrBlank() }
+            ?.sortedBy { it.name?.lowercase() }
+            .orEmpty()
+    }
 
-            for (device in devices) {
-                val name = device.name
-                if (preferredName != null && name == preferredName) return name
-                if (preferredName == null && name != null) return name
-            }
+    private fun showBondedBluetoothDevicesDialog() {
+        if (bluetoothAdapter == null) {
+            Toast.makeText(this, R.string.bluetooth_not_supported, Toast.LENGTH_SHORT).show()
+            return
         }
-        return null
+
+        if (bluetoothAdapter?.isEnabled != true) {
+            Toast.makeText(this, R.string.bluetooth_disabled, Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        if (!hasBluetoothConnectPermission()) {
+            Toast.makeText(this, R.string.bluetooth_permission_required, Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val devices = getBondedBluetoothDevices()
+        if (devices.isEmpty()) {
+            Toast.makeText(this, R.string.bluetooth_no_paired_devices, Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val deviceNames = devices.mapNotNull { it.name }.toTypedArray()
+        AlertDialog.Builder(this)
+            .setTitle(R.string.bluetooth_select_dialog_title)
+            .setItems(deviceNames) { _, which ->
+                bluetoothNameInput.setText(deviceNames[which])
+                saveBluetoothDeviceName()
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
     }
 
     private fun saveBluetoothDeviceName() {
