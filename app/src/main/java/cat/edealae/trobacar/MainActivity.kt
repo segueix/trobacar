@@ -63,6 +63,11 @@ class MainActivity : AppCompatActivity() {
     private lateinit var openMapsButton: MaterialButton
     private lateinit var shareButton: MaterialButton
     private lateinit var bluetoothSetupCard: CardView
+    private lateinit var bluetoothSummaryCard: CardView
+    private lateinit var bluetoothSummaryStatus: TextView
+    private lateinit var delaySummaryStatus: TextView
+    private lateinit var summaryChangeBluetoothButton: MaterialButton
+    private lateinit var summaryChangeDelayButton: MaterialButton
     private lateinit var bluetoothStatusText: TextView
     private lateinit var bluetoothNameInput: TextInputEditText
     private lateinit var selectBluetoothButton: MaterialButton
@@ -108,6 +113,11 @@ class MainActivity : AppCompatActivity() {
             openMapsButton = findViewById(R.id.openMapsButton)
             shareButton = findViewById(R.id.shareButton)
             bluetoothSetupCard = findViewById(R.id.bluetoothSetupCard)
+            bluetoothSummaryCard = findViewById(R.id.bluetoothSummaryCard)
+            bluetoothSummaryStatus = findViewById(R.id.bluetoothSummaryStatus)
+            delaySummaryStatus = findViewById(R.id.delaySummaryStatus)
+            summaryChangeBluetoothButton = findViewById(R.id.summaryChangeBluetoothButton)
+            summaryChangeDelayButton = findViewById(R.id.summaryChangeDelayButton)
             bluetoothStatusText = findViewById(R.id.bluetoothStatusText)
             bluetoothNameInput = findViewById(R.id.bluetoothNameInput)
             selectBluetoothButton = findViewById(R.id.selectBluetoothButton)
@@ -123,6 +133,8 @@ class MainActivity : AppCompatActivity() {
             selectBluetoothButton.setOnClickListener { showBondedBluetoothDevicesDialog() }
             saveBluetoothButton.setOnClickListener { saveBluetoothDeviceName() }
             selectDelayButton.setOnClickListener { showDelaySelectionDialog() }
+            summaryChangeBluetoothButton.setOnClickListener { showBondedBluetoothDevicesDialog() }
+            summaryChangeDelayButton.setOnClickListener { showDelaySelectionDialog() }
 
             checkAndRequestPermissions()
             CrashLogger.log(this, "MAIN", "MainActivity onCreate completat")
@@ -327,13 +339,29 @@ class MainActivity : AppCompatActivity() {
         val savedName = prefs.getString("default_bluetooth_device_name", null)
         val isConfigured = !savedName.isNullOrEmpty()
 
-        // Show setup card only when not configured
-        bluetoothSetupCard.visibility = if (isConfigured) CardView.GONE else CardView.VISIBLE
+        if (isConfigured) {
+            // Show compact summary card
+            bluetoothSetupCard.visibility = CardView.GONE
+            bluetoothSummaryCard.visibility = CardView.VISIBLE
 
-        if (!isConfigured) {
-            if (bluetoothNameInput.text.isNullOrEmpty() && !savedName.isNullOrEmpty()) {
-                bluetoothNameInput.setText(savedName)
+            val bluetoothConnected = prefs.getBoolean("bluetooth_car_connected", false)
+            bluetoothSummaryStatus.text = if (bluetoothConnected) {
+                getString(R.string.bluetooth_connected_to, savedName)
+            } else {
+                getString(R.string.bluetooth_configured, savedName)
             }
+
+            val delaySec = prefs.getInt("disconnect_delay_seconds", 0)
+            val delayText = if (delaySec == 0) {
+                getString(R.string.disconnect_delay_immediate)
+            } else {
+                getString(R.string.disconnect_delay_seconds, delaySec)
+            }
+            delaySummaryStatus.text = getString(R.string.disconnect_delay_current, delayText)
+        } else {
+            // Show full setup card
+            bluetoothSummaryCard.visibility = CardView.GONE
+            bluetoothSetupCard.visibility = CardView.VISIBLE
 
             bluetoothStatusText.text = when {
                 bluetoothAdapter == null -> getString(R.string.bluetooth_not_supported)
