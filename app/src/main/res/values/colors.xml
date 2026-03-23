@@ -34,7 +34,7 @@
     <!-- Mode fosc -->
     <color name="background_dark">#121212</color>
     <color name="surface_dark">#1E1E1E</color>
-    <color name="surface_elevated_dark">#2C2C2C</color>
+    <color name="surface_elevated_dark">#1A1A1A</color>
     <color name="text_primary_dark">#FFFFFF</color>
     <color name="text_secondary_dark">#B0B0B0</color>
     <color name="text_hint_dark">#757575</color>
