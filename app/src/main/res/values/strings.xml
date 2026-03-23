@@ -42,4 +42,5 @@
     <string name="error_log_clear">Esborrar</string>
     <string name="error_log_share">Compartir</string>
     <string name="error_log_close">Tancar</string>
+    <string name="location_service_unavailable">No s'ha pogut activar el seguiment en segon pla. Obre l'app i comprova els permisos.</string>
 </resources>
