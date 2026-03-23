@@ -35,4 +35,5 @@
     <string name="bluetooth_default_device">Predeterminado: %1$s</string>
     <string name="save_default_bluetooth">Guardar como predeterminado</string>
     <string name="bluetooth_default_saved">Bluetooth predeterminado guardado</string>
+    <string name="location_service_unavailable">No se ha podido activar el seguimiento en segundo plano. Abre la app y revisa los permisos.</string>
 </resources>

@@ -26,6 +26,7 @@ class LocationService : Service(), LocationListener {
     private val NOTIFICATION_ID = 1
     private val CHANNEL_ID = "TrobaCarLocationChannel"
     private var isBluetoothReceiverRegistered = false
+    private var isRunningInForeground = false
 
     private val bluetoothReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -64,23 +65,46 @@ class LocationService : Service(), LocationListener {
 
     override fun onCreate() {
         super.onCreate()
-        try {
-            CrashLogger.log(this, "SERVICE", "LocationService onCreate iniciat")
-            locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-            createNotificationChannel()
-            startForeground(NOTIFICATION_ID, createNotification())
-            registerBluetoothReceiver()
-            CrashLogger.log(this, "SERVICE", "LocationService onCreate completat")
-        } catch (e: Exception) {
-            CrashLogger.logError(this, "SERVICE", "Error a onCreate", e)
-            throw e
-        }
+        CrashLogger.log(this, "SERVICE", "LocationService onCreate iniciat")
+        locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        createNotificationChannel()
+        registerBluetoothReceiver()
+        CrashLogger.log(this, "SERVICE", "LocationService onCreate completat")
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         CrashLogger.log(this, "SERVICE", "onStartCommand cridat")
+
+        if (!hasLocationPermission()) {
+            CrashLogger.log(this, "SERVICE", "Aturant servei: sense permís de localització")
+            stopSelf()
+            return START_NOT_STICKY
+        }
+
+        if (!ensureForegroundStarted()) {
+            stopSelf()
+            return START_NOT_STICKY
+        }
+
         startLocationUpdates()
         return START_STICKY
+    }
+
+
+    private fun ensureForegroundStarted(): Boolean {
+        if (isRunningInForeground) return true
+
+        return try {
+            startForeground(NOTIFICATION_ID, createNotification())
+            isRunningInForeground = true
+            true
+        } catch (e: SecurityException) {
+            CrashLogger.logError(this, "SERVICE", "No es pot iniciar el foreground service per permisos/estat", e)
+            false
+        } catch (e: RuntimeException) {
+            CrashLogger.logError(this, "SERVICE", "No es pot iniciar el foreground service ara mateix", e)
+            false
+        }
     }
 
     private fun startLocationUpdates() {
@@ -186,6 +210,7 @@ class LocationService : Service(), LocationListener {
     override fun onDestroy() {
         CrashLogger.log(this, "SERVICE", "LocationService onDestroy")
         super.onDestroy()
+        isRunningInForeground = false
         locationManager.removeUpdates(this)
         if (isBluetoothReceiverRegistered) {
             unregisterReceiver(bluetoothReceiver)
@@ -194,6 +219,12 @@ class LocationService : Service(), LocationListener {
     }
 
     override fun onTaskRemoved(rootIntent: Intent?) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            CrashLogger.log(this, "SERVICE", "No es reinicia el servei en segon pla a Android 12+")
+            super.onTaskRemoved(rootIntent)
+            return
+        }
+
         val restartIntent = Intent(applicationContext, LocationService::class.java).apply {
             `package` = packageName
         }
@@ -206,7 +237,7 @@ class LocationService : Service(), LocationListener {
                 applicationContext.startService(restartIntent)
             }
         } catch (exception: RuntimeException) {
-            CrashLogger.logError(this, "SERVICE", "No s'ha pogut reiniciar el servei (Android 12+)", exception)
+            CrashLogger.logError(this, "SERVICE", "No s'ha pogut reiniciar el servei", exception)
         }
 
         super.onTaskRemoved(rootIntent)

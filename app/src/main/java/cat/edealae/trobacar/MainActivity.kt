@@ -145,12 +145,27 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun startLocationService() {
-        val intent = Intent(this, LocationService::class.java)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startForegroundService(intent)
-        } else {
-            startService(intent)
+        if (!hasLocationPermission()) {
+            CrashLogger.log(this, "MAIN", "No s'inicia el servei: falta permís de localització")
+            return
         }
+
+        val intent = Intent(this, LocationService::class.java)
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                startForegroundService(intent)
+            } else {
+                startService(intent)
+            }
+        } catch (e: RuntimeException) {
+            CrashLogger.logError(this, "MAIN", "No s'ha pogut iniciar el servei de localització", e)
+            Toast.makeText(this, R.string.location_service_unavailable, Toast.LENGTH_LONG).show()
+        }
+    }
+
+    private fun hasLocationPermission(): Boolean {
+        return ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+            ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
     }
 
     private fun updateUI() {
@@ -222,7 +237,14 @@ class MainActivity : AppCompatActivity() {
         if (!adapter.isEnabled) return null
 
         for (profile in listOf(BluetoothProfile.HEADSET, BluetoothProfile.A2DP)) {
-            for (device in bluetoothManager.getConnectedDevices(profile)) {
+            val devices = try {
+                bluetoothManager.getConnectedDevices(profile)
+            } catch (e: IllegalArgumentException) {
+                CrashLogger.logError(this, "BT", "Perfil Bluetooth no suportat: $profile", e)
+                emptyList()
+            }
+
+            for (device in devices) {
                 val name = device.name
                 if (preferredName != null && name == preferredName) return name
                 if (preferredName == null && name != null) return name

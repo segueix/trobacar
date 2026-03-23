@@ -35,4 +35,5 @@
     <string name="bluetooth_default_device">Default: %1$s</string>
     <string name="save_default_bluetooth">Save as default</string>
     <string name="bluetooth_default_saved">Default Bluetooth saved</string>
+    <string name="location_service_unavailable">Background tracking could not be activated. Open the app and check permissions.</string>
 </resources>
