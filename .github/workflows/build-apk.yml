@@ -22,14 +22,63 @@ jobs:
         with:
           cache-read-only: false
 
-      - name: Build debug APK
-        run: ./gradlew assembleDebug
+      - name: Build debug APK and analysis bundle
+        run: |
+          set -euo pipefail
 
-      - name: Upload debug APK
+          APK_PATH=app/build/outputs/apk/debug/app-debug.apk
+          REPORT_DIR=build/github-apk-report
+
+          ./gradlew assembleDebug
+
+          mkdir -p "$REPORT_DIR"
+
+          {
+            echo 'APK analysis report'
+            echo '==================='
+            echo
+            echo "Generated at: $(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+            echo "APK path: $APK_PATH"
+            echo
+            echo '== File type =='
+            file "$APK_PATH"
+            echo
+            echo '== SHA256 =='
+            sha256sum "$APK_PATH"
+            echo
+            echo '== ZIP contents =='
+            unzip -l "$APK_PATH"
+          } > "$REPORT_DIR/apk-analysis.txt"
+
+          if command -v aapt >/dev/null 2>&1; then
+            {
+              echo
+              echo '== aapt badging =='
+              aapt dump badging "$APK_PATH"
+              echo
+              echo '== aapt permissions =='
+              aapt dump permissions "$APK_PATH"
+            } >> "$REPORT_DIR/apk-analysis.txt"
+          fi
+
+          if command -v apkanalyzer >/dev/null 2>&1; then
+            {
+              echo
+              echo '== apkanalyzer summary =='
+              apkanalyzer apk summary "$APK_PATH"
+              echo
+              echo '== apkanalyzer manifest =='
+              apkanalyzer manifest print "$APK_PATH"
+            } >> "$REPORT_DIR/apk-analysis.txt"
+          fi
+
+      - name: Upload APK bundle
         uses: actions/upload-artifact@v4
         with:
-          name: trobacar-debug-apk
-          path: app/build/outputs/apk/debug/app-debug.apk
+          name: trobacar-debug-bundle
+          path: |
+            app/build/outputs/apk/debug/app-debug.apk
+            build/github-apk-report/apk-analysis.txt
           if-no-files-found: error
 
       - name: Publish download instructions
@@ -37,7 +86,9 @@ jobs:
           {
             echo '## APK generated successfully';
             echo '';
-            echo 'You can download the APK from this workflow run in **Artifacts > trobacar-debug-apk**.';
+            echo 'Download the combined bundle from **Artifacts > trobacar-debug-bundle**.';
             echo '';
-            echo 'Generated file: `app/build/outputs/apk/debug/app-debug.apk`';
+            echo 'Included files:';
+            echo '- `app/build/outputs/apk/debug/app-debug.apk`';
+            echo '- `build/github-apk-report/apk-analysis.txt`';
           } >> "$GITHUB_STEP_SUMMARY"
