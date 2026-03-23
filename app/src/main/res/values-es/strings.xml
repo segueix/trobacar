@@ -60,4 +60,15 @@ Consejo para tu móvil: %2$s</string>
     <string name="battery_help_tip_oppo">En OPPO/realme/OnePlus/vivo revisa Batería y pon la app sin optimización o sin restricciones.</string>
     <string name="battery_help_tip_samsung">En Samsung comprueba que la app no esté en Aplicaciones en suspensión y deja la batería sin restricciones.</string>
     <string name="battery_help_tip_generic">En %1$s busca las opciones de Batería, optimización o restricciones en segundo plano y excluye PinPark si es posible.</string>
+    <string name="disconnect_delay_title">Retardo de desconexión</string>
+    <string name="disconnect_delay_help">Cuando el Bluetooth se desconecta, la app puede guardar la ubicación del momento exacto o de unos segundos antes (útil si el móvil tarda en detectar la desconexión).</string>
+    <string name="disconnect_delay_immediate">Inmediato</string>
+    <string name="disconnect_delay_seconds">%1$d segundos</string>
+    <string name="disconnect_delay_saved">Retardo de desconexión guardado</string>
+    <string name="disconnect_delay_current">Retardo actual: %1$s</string>
+    <string name="bluetooth_config_title">Configuración Bluetooth</string>
+    <string name="bluetooth_setup_needed">Configura el Bluetooth de tu coche para detectar automáticamente dónde aparcas.</string>
+    <string name="bluetooth_configured">Bluetooth configurado: %1$s</string>
+    <string name="change_bluetooth">Cambiar Bluetooth</string>
+    <string name="change_delay">Cambiar retardo</string>
 </resources>

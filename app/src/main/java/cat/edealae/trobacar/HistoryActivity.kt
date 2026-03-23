@@ -1,8 +1,14 @@
 package cat.edealae.trobacar
 
+import android.Manifest
+import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothDevice
+import android.bluetooth.BluetoothManager
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,8 +18,11 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.cardview.widget.CardView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.button.MaterialButton
 
 class HistoryActivity : AppCompatActivity() {
 
@@ -22,11 +31,21 @@ class HistoryActivity : AppCompatActivity() {
     private lateinit var clearButton: TextView
     private lateinit var adapter: HistoryAdapter
     private lateinit var darkModeSwitch: com.google.android.material.switchmaterial.SwitchMaterial
+    private lateinit var bluetoothConfigCard: CardView
+    private lateinit var historyBluetoothStatus: TextView
+    private lateinit var historyChangeBluetoothButton: MaterialButton
+    private lateinit var historyChangeDelayButton: MaterialButton
+
+    private val bluetoothManager by lazy {
+        getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
+    }
+    private val bluetoothAdapter: BluetoothAdapter?
+        get() = bluetoothManager.adapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         // Aplicar tema guardat abans de setContentView
         applyTheme()
-        
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_history)
 
@@ -37,15 +56,19 @@ class HistoryActivity : AppCompatActivity() {
         emptyView = findViewById(R.id.emptyHistoryText)
         clearButton = findViewById(R.id.clearHistoryButton)
         darkModeSwitch = findViewById(R.id.darkModeSwitch)
+        bluetoothConfigCard = findViewById(R.id.bluetoothConfigCard)
+        historyBluetoothStatus = findViewById(R.id.historyBluetoothStatus)
+        historyChangeBluetoothButton = findViewById(R.id.historyChangeBluetoothButton)
+        historyChangeDelayButton = findViewById(R.id.historyChangeDelayButton)
 
         recyclerView.layoutManager = LinearLayoutManager(this)
-        
+
         clearButton.setOnClickListener {
             showClearConfirmDialog()
         }
-        
-        setupThemeSelectors()
 
+        setupThemeSelectors()
+        setupBluetoothConfig()
         loadHistory()
     }
     
@@ -103,6 +126,109 @@ class HistoryActivity : AppCompatActivity() {
         }
         
         setTheme(themeId)
+    }
+
+    private fun setupBluetoothConfig() {
+        val prefs = getSharedPreferences("TrobaCar", Context.MODE_PRIVATE)
+        val savedName = prefs.getString("default_bluetooth_device_name", null)
+
+        if (!savedName.isNullOrEmpty()) {
+            bluetoothConfigCard.visibility = View.VISIBLE
+            updateBluetoothConfigStatus()
+
+            historyChangeBluetoothButton.setOnClickListener { showBondedBluetoothDevicesDialog() }
+            historyChangeDelayButton.setOnClickListener { showDelaySelectionDialog() }
+        } else {
+            bluetoothConfigCard.visibility = View.GONE
+        }
+    }
+
+    private fun updateBluetoothConfigStatus() {
+        val prefs = getSharedPreferences("TrobaCar", Context.MODE_PRIVATE)
+        val savedName = prefs.getString("default_bluetooth_device_name", null) ?: return
+        val delaySec = prefs.getInt("disconnect_delay_seconds", 0)
+        val delayText = if (delaySec == 0) {
+            getString(R.string.disconnect_delay_immediate)
+        } else {
+            getString(R.string.disconnect_delay_seconds, delaySec)
+        }
+
+        historyBluetoothStatus.text = getString(R.string.bluetooth_configured, savedName) +
+            "\n" + getString(R.string.disconnect_delay_current, delayText)
+    }
+
+    private fun hasBluetoothConnectPermission(): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED
+        } else {
+            true
+        }
+    }
+
+    @android.annotation.SuppressLint("MissingPermission")
+    private fun getBondedBluetoothDevices(): List<BluetoothDevice> {
+        val adapter = bluetoothAdapter ?: return emptyList()
+        if (!adapter.isEnabled || !hasBluetoothConnectPermission()) return emptyList()
+        return adapter.bondedDevices
+            ?.filter { !it.name.isNullOrBlank() }
+            ?.sortedBy { it.name?.lowercase() }
+            .orEmpty()
+    }
+
+    private fun showBondedBluetoothDevicesDialog() {
+        if (bluetoothAdapter == null) {
+            Toast.makeText(this, R.string.bluetooth_not_supported, Toast.LENGTH_SHORT).show()
+            return
+        }
+        if (bluetoothAdapter?.isEnabled != true) {
+            Toast.makeText(this, R.string.bluetooth_disabled, Toast.LENGTH_SHORT).show()
+            return
+        }
+        if (!hasBluetoothConnectPermission()) {
+            Toast.makeText(this, R.string.bluetooth_permission_required, Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val devices = getBondedBluetoothDevices()
+        if (devices.isEmpty()) {
+            Toast.makeText(this, R.string.bluetooth_no_paired_devices, Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val deviceNames = devices.mapNotNull { it.name }.toTypedArray()
+        AlertDialog.Builder(this)
+            .setTitle(R.string.bluetooth_select_dialog_title)
+            .setItems(deviceNames) { _, which ->
+                val prefs = getSharedPreferences("TrobaCar", Context.MODE_PRIVATE)
+                prefs.edit().putString("default_bluetooth_device_name", deviceNames[which]).apply()
+                Toast.makeText(this, R.string.bluetooth_default_saved, Toast.LENGTH_SHORT).show()
+                updateBluetoothConfigStatus()
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
+    }
+
+    private fun showDelaySelectionDialog() {
+        val prefs = getSharedPreferences("TrobaCar", Context.MODE_PRIVATE)
+        val delayOptions = intArrayOf(0, 5, 10, 15, 20)
+        val delayLabels = delayOptions.map { sec ->
+            if (sec == 0) getString(R.string.disconnect_delay_immediate)
+            else getString(R.string.disconnect_delay_seconds, sec)
+        }.toTypedArray()
+
+        val currentDelay = prefs.getInt("disconnect_delay_seconds", 0)
+        val checkedItem = delayOptions.indexOf(currentDelay).coerceAtLeast(0)
+
+        AlertDialog.Builder(this)
+            .setTitle(R.string.disconnect_delay_title)
+            .setSingleChoiceItems(delayLabels, checkedItem) { dialog, which ->
+                prefs.edit().putInt("disconnect_delay_seconds", delayOptions[which]).apply()
+                Toast.makeText(this, R.string.disconnect_delay_saved, Toast.LENGTH_SHORT).show()
+                updateBluetoothConfigStatus()
+                dialog.dismiss()
+            }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
     }
 
     private fun loadHistory() {
