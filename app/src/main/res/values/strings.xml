@@ -67,4 +67,15 @@ Consell per al teu mòbil: %2$s</string>
     <string name="battery_help_tip_oppo">A OPPO/realme/OnePlus/vivo revisa Bateria i posa l\'app a sense optimització o sense restriccions.</string>
     <string name="battery_help_tip_samsung">A Samsung comprova que l\'app no estigui a Aplicacions en suspens i deixa la bateria sense restriccions.</string>
     <string name="battery_help_tip_generic">A %1$s busca les opcions de Bateria, optimització o restriccions en segon pla i exclou PinPark si és possible.</string>
+    <string name="disconnect_delay_title">Retard de desconnexió</string>
+    <string name="disconnect_delay_help">Quan el Bluetooth es desconnecta, l\'app pot guardar la ubicació del moment exacte o d\'uns segons abans (útil si el mòbil triga a detectar la desconnexió).</string>
+    <string name="disconnect_delay_immediate">Immediat</string>
+    <string name="disconnect_delay_seconds">%1$d segons</string>
+    <string name="disconnect_delay_saved">Retard de desconnexió guardat</string>
+    <string name="disconnect_delay_current">Retard actual: %1$s</string>
+    <string name="bluetooth_config_title">Configuració Bluetooth</string>
+    <string name="bluetooth_setup_needed">Configura el Bluetooth del teu cotxe per detectar automàticament on aparques.</string>
+    <string name="bluetooth_configured">Bluetooth configurat: %1$s</string>
+    <string name="change_bluetooth">Canviar Bluetooth</string>
+    <string name="change_delay">Canviar retard</string>
 </resources>

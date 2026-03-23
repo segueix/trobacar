@@ -69,6 +69,11 @@ class LocationService : Service(), LocationListener {
 
     private val delayedDisconnectSaves = mutableMapOf<String, Runnable>()
 
+    // Buffer de ubicacions recents per al retard de desconnexió
+    private data class TimestampedLocation(val location: Location, val timestamp: Long)
+    private val locationBuffer = mutableListOf<TimestampedLocation>()
+    private val maxBufferAgeMs = 25_000L // Keep 25 seconds of history
+
     private val bluetoothReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             if (context == null || intent == null) return
@@ -180,7 +185,12 @@ class LocationService : Service(), LocationListener {
     }
 
     override fun onLocationChanged(location: Location) {
-        // Location is tracked continuously; saved only when Bluetooth car disconnects
+        val now = System.currentTimeMillis()
+        synchronized(locationBuffer) {
+            locationBuffer.add(TimestampedLocation(location, now))
+            // Remove entries older than maxBufferAgeMs
+            locationBuffer.removeAll { now - it.timestamp > maxBufferAgeMs }
+        }
     }
 
     override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
@@ -205,13 +215,38 @@ class LocationService : Service(), LocationListener {
 
     private fun scheduleDisconnectSave(deviceName: String) {
         cancelPendingDisconnectSave(deviceName, "nou esdeveniment de desconnexió")
+
+        val prefs = getSharedPreferences("TrobaCar", Context.MODE_PRIVATE)
+        val delaySeconds = prefs.getInt("disconnect_delay_seconds", 0)
+
+        // Capture the buffered location from N seconds ago at the moment of disconnect
+        val bufferedLocation = getLocationFromSecondsAgo(delaySeconds)
+
         val saveRunnable = Runnable {
             delayedDisconnectSaves.remove(deviceName)
-            CrashLogger.log(this, "BT", "Debounce completat per $deviceName - intentant guardar ubicació")
-            saveCurrentLocation()
+            CrashLogger.log(this, "BT", "Debounce completat per $deviceName - intentant guardar ubicació (retard: ${delaySeconds}s)")
+            if (bufferedLocation != null && delaySeconds > 0) {
+                // Use the pre-captured location from N seconds before disconnect
+                CrashLogger.log(this, "BT", "Usant ubicació del buffer (${delaySeconds}s abans): ${bufferedLocation.latitude}, ${bufferedLocation.longitude}")
+                val now = System.currentTimeMillis()
+                persistLocation(bufferedLocation, now)
+            } else {
+                // Immediate mode or no buffered location: use current best location
+                saveCurrentLocation()
+            }
         }
         delayedDisconnectSaves[deviceName] = saveRunnable
         mainHandler.postDelayed(saveRunnable, DISCONNECT_DEBOUNCE_MS)
+    }
+
+    private fun getLocationFromSecondsAgo(seconds: Int): Location? {
+        if (seconds <= 0) return null
+        val targetTime = System.currentTimeMillis() - (seconds * 1000L)
+        synchronized(locationBuffer) {
+            if (locationBuffer.isEmpty()) return null
+            // Find the location closest to targetTime
+            return locationBuffer.minByOrNull { kotlin.math.abs(it.timestamp - targetTime) }?.location
+        }
     }
 
     private fun cancelPendingDisconnectSave(deviceName: String, reason: String) {

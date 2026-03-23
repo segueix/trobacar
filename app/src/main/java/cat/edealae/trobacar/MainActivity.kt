@@ -42,7 +42,8 @@ class MainActivity : AppCompatActivity() {
             "saved_latitude",
             "saved_longitude",
             "saved_timestamp",
-            "location_name" -> runOnUiThread {
+            "location_name",
+            "disconnect_delay_seconds" -> runOnUiThread {
                 updateUI()
                 updateBluetoothSection()
             }
@@ -61,10 +62,17 @@ class MainActivity : AppCompatActivity() {
     private lateinit var historyButton: CardView
     private lateinit var openMapsButton: MaterialButton
     private lateinit var shareButton: MaterialButton
+    private lateinit var bluetoothSetupCard: CardView
+    private lateinit var bluetoothSummaryCard: CardView
+    private lateinit var bluetoothSummaryStatus: TextView
+    private lateinit var delaySummaryStatus: TextView
+    private lateinit var summaryChangeBluetoothButton: MaterialButton
+    private lateinit var summaryChangeDelayButton: MaterialButton
     private lateinit var bluetoothStatusText: TextView
     private lateinit var bluetoothNameInput: TextInputEditText
     private lateinit var selectBluetoothButton: MaterialButton
     private lateinit var saveBluetoothButton: MaterialButton
+    private lateinit var selectDelayButton: MaterialButton
 
     private val bluetoothManager by lazy {
         getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
@@ -104,10 +112,17 @@ class MainActivity : AppCompatActivity() {
             historyButton = findViewById(R.id.historyButton)
             openMapsButton = findViewById(R.id.openMapsButton)
             shareButton = findViewById(R.id.shareButton)
+            bluetoothSetupCard = findViewById(R.id.bluetoothSetupCard)
+            bluetoothSummaryCard = findViewById(R.id.bluetoothSummaryCard)
+            bluetoothSummaryStatus = findViewById(R.id.bluetoothSummaryStatus)
+            delaySummaryStatus = findViewById(R.id.delaySummaryStatus)
+            summaryChangeBluetoothButton = findViewById(R.id.summaryChangeBluetoothButton)
+            summaryChangeDelayButton = findViewById(R.id.summaryChangeDelayButton)
             bluetoothStatusText = findViewById(R.id.bluetoothStatusText)
             bluetoothNameInput = findViewById(R.id.bluetoothNameInput)
             selectBluetoothButton = findViewById(R.id.selectBluetoothButton)
             saveBluetoothButton = findViewById(R.id.saveBluetoothButton)
+            selectDelayButton = findViewById(R.id.selectDelayButton)
 
             locationName.setOnClickListener { showEditNameDialog() }
             openMapsButton.setOnClickListener { openSavedLocationInMaps() }
@@ -117,6 +132,9 @@ class MainActivity : AppCompatActivity() {
             findViewById<CardView>(R.id.errorLogButton).setOnClickListener { showErrorLogDialog() }
             selectBluetoothButton.setOnClickListener { showBondedBluetoothDevicesDialog() }
             saveBluetoothButton.setOnClickListener { saveBluetoothDeviceName() }
+            selectDelayButton.setOnClickListener { showDelaySelectionDialog() }
+            summaryChangeBluetoothButton.setOnClickListener { showBondedBluetoothDevicesDialog() }
+            summaryChangeDelayButton.setOnClickListener { showDelaySelectionDialog() }
 
             checkAndRequestPermissions()
             CrashLogger.log(this, "MAIN", "MainActivity onCreate completat")
@@ -222,7 +240,7 @@ class MainActivity : AppCompatActivity() {
 
         val bluetoothConnected = prefs.getBoolean("bluetooth_car_connected", false)
         androidAutoIndicator.setImageResource(
-            if (bluetoothConnected) R.drawable.ic_circle_white else R.drawable.ic_circle_red
+            if (bluetoothConnected) R.drawable.ic_circle_green else R.drawable.ic_circle_red
         )
 
         val savedLat = prefs.getFloat("saved_latitude", 0f)
@@ -319,19 +337,72 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateBluetoothSection() {
         val savedName = prefs.getString("default_bluetooth_device_name", null)
-        val bluetoothConnected = prefs.getBoolean("bluetooth_car_connected", false)
+        val isConfigured = !savedName.isNullOrEmpty()
 
-        if (bluetoothNameInput.text.isNullOrEmpty() && !savedName.isNullOrEmpty()) {
-            bluetoothNameInput.setText(savedName)
-        }
+        if (isConfigured) {
+            // Show compact summary card
+            bluetoothSetupCard.visibility = CardView.GONE
+            bluetoothSummaryCard.visibility = CardView.VISIBLE
 
-        bluetoothStatusText.text = when {
-            bluetoothAdapter == null -> getString(R.string.bluetooth_not_supported)
-            bluetoothAdapter?.isEnabled != true -> getString(R.string.bluetooth_disabled)
-            savedName.isNullOrEmpty() -> getString(R.string.bluetooth_default_not_set)
-            bluetoothConnected -> getString(R.string.bluetooth_connected_to, savedName)
-            else -> getString(R.string.bluetooth_default_device, savedName)
+            val bluetoothConnected = prefs.getBoolean("bluetooth_car_connected", false)
+            bluetoothSummaryStatus.text = if (bluetoothConnected) {
+                getString(R.string.bluetooth_connected_to, savedName)
+            } else {
+                getString(R.string.bluetooth_configured, savedName)
+            }
+
+            val delaySec = prefs.getInt("disconnect_delay_seconds", 0)
+            val delayText = if (delaySec == 0) {
+                getString(R.string.disconnect_delay_immediate)
+            } else {
+                getString(R.string.disconnect_delay_seconds, delaySec)
+            }
+            delaySummaryStatus.text = getString(R.string.disconnect_delay_current, delayText)
+        } else {
+            // Show full setup card
+            bluetoothSummaryCard.visibility = CardView.GONE
+            bluetoothSetupCard.visibility = CardView.VISIBLE
+
+            bluetoothStatusText.text = when {
+                bluetoothAdapter == null -> getString(R.string.bluetooth_not_supported)
+                bluetoothAdapter?.isEnabled != true -> getString(R.string.bluetooth_disabled)
+                else -> getString(R.string.bluetooth_setup_needed)
+            }
+
+            updateDelayButtonText()
         }
+    }
+
+    private fun updateDelayButtonText() {
+        val delaySec = prefs.getInt("disconnect_delay_seconds", 0)
+        val delayText = if (delaySec == 0) {
+            getString(R.string.disconnect_delay_immediate)
+        } else {
+            getString(R.string.disconnect_delay_seconds, delaySec)
+        }
+        selectDelayButton.text = getString(R.string.disconnect_delay_current, delayText)
+    }
+
+    private fun showDelaySelectionDialog() {
+        val delayOptions = intArrayOf(0, 5, 10, 15, 20)
+        val delayLabels = delayOptions.map { sec ->
+            if (sec == 0) getString(R.string.disconnect_delay_immediate)
+            else getString(R.string.disconnect_delay_seconds, sec)
+        }.toTypedArray()
+
+        val currentDelay = prefs.getInt("disconnect_delay_seconds", 0)
+        val checkedItem = delayOptions.indexOf(currentDelay).coerceAtLeast(0)
+
+        AlertDialog.Builder(this)
+            .setTitle(R.string.disconnect_delay_title)
+            .setSingleChoiceItems(delayLabels, checkedItem) { dialog, which ->
+                prefs.edit().putInt("disconnect_delay_seconds", delayOptions[which]).apply()
+                updateDelayButtonText()
+                Toast.makeText(this, R.string.disconnect_delay_saved, Toast.LENGTH_SHORT).show()
+                dialog.dismiss()
+            }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
     }
 
     @android.annotation.SuppressLint("MissingPermission")
