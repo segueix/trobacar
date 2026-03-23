@@ -217,7 +217,7 @@ class MainActivity : AppCompatActivity() {
         val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
         val isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
         gpsIndicator.setImageResource(
-            if (isGpsEnabled) R.drawable.ic_circle_green else R.drawable.ic_circle_red
+            if (isGpsEnabled) R.drawable.ic_circle_white else R.drawable.ic_circle_red
         )
 
         val bluetoothConnected = prefs.getBoolean("bluetooth_car_connected", false)

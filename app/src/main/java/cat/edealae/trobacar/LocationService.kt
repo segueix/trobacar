@@ -239,6 +239,22 @@ class LocationService : Service(), LocationListener {
                 } else {
                     CrashLogger.log(this, "SERVICE", "saveCurrentLocation: no hi ha ubicació prou bona disponible")
                 }
+            val location: Location? = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+                ?: locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
+
+            if (location != null) {
+                CrashLogger.log(this, "SERVICE", "Guardant ubicació: ${location.latitude}, ${location.longitude}")
+                prefs.edit()
+                    .putFloat("saved_latitude", location.latitude.toFloat())
+                    .putFloat("saved_longitude", location.longitude.toFloat())
+                    .putLong("saved_timestamp", now)
+                    .putString("saved_method", "Bluetooth")
+                    .putString("location_name", getString(R.string.current_parking))
+                    .apply()
+
+                LocationHistory.addLocation(this, location.latitude, location.longitude, "Bluetooth")
+            } else {
+                CrashLogger.log(this, "SERVICE", "saveCurrentLocation: no hi ha ubicació disponible")
             }
         } catch (e: SecurityException) {
             CrashLogger.logError(this, "SERVICE", "SecurityException a saveCurrentLocation", e)
@@ -388,6 +404,72 @@ class LocationService : Service(), LocationListener {
         } catch (_: Exception) {
             false
         }
+
+        CrashLogger.log(this, "SERVICE", "Cercant un fix més recent després de la desconnexió")
+        requestFreshLocationFix(bestLastKnown, callback)
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun requestFreshLocationFix(fallback: Location?, callback: (Location?) -> Unit) {
+        val candidateProviders = buildList {
+            if (isProviderEnabled(LocationManager.GPS_PROVIDER)) add(LocationManager.GPS_PROVIDER)
+            if (isProviderEnabled(LocationManager.NETWORK_PROVIDER)) add(LocationManager.NETWORK_PROVIDER)
+        }
+
+        if (candidateProviders.isEmpty()) {
+            callback(fallback?.takeIf(::isLocationFallbackUsable))
+            return
+        }
+
+        var completed = false
+        var bestLocation: Location? = fallback?.takeIf(::isLocationFallbackUsable)
+        lateinit var freshLocationListener: LocationListener
+
+        fun finish(result: Location?) {
+            if (completed) return
+            completed = true
+            mainHandler.removeCallbacksAndMessages(freshLocationListener)
+            try {
+                locationManager.removeUpdates(freshLocationListener)
+            } catch (_: Exception) {
+            }
+            callback(result)
+        }
+
+        val timeoutRunnable = Runnable {
+            val timeoutResult = bestLocation?.takeIf(::isLocationFallbackUsable)
+            if (timeoutResult != null) {
+                CrashLogger.log(this, "SERVICE", "Timeout obtenint fix recent; s'utilitza el millor candidat disponible")
+            } else {
+                CrashLogger.log(this, "SERVICE", "Timeout obtenint fix recent i sense candidat prou fiable")
+            }
+            finish(timeoutResult)
+        }
+
+        freshLocationListener = object : LocationListener {
+            override fun onLocationChanged(location: Location) {
+                if (bestLocation == null || isBetterLocation(location, bestLocation)) {
+                    bestLocation = location
+                }
+                if (isLocationGoodEnough(location)) {
+                    CrashLogger.log(this@LocationService, "SERVICE", "Fix recent acceptat (${location.provider}, ${location.accuracy}m)")
+                    finish(location)
+                }
+            }
+
+            override fun onProviderDisabled(provider: String) = Unit
+            override fun onProviderEnabled(provider: String) = Unit
+            override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) = Unit
+        }
+
+        candidateProviders.forEach { provider ->
+            try {
+                locationManager.requestLocationUpdates(provider, 0L, 0f, freshLocationListener, Looper.getMainLooper())
+            } catch (e: Exception) {
+                CrashLogger.logError(this, "SERVICE", "No s'ha pogut demanar un fix recent de $provider", e)
+            }
+        }
+        mainHandler.postAtTime(timeoutRunnable, freshLocationListener, System.currentTimeMillis() + FRESH_FIX_TIMEOUT_MS)
     }
 
     private fun createNotificationChannels() {
