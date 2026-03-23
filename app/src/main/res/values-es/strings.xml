@@ -40,4 +40,10 @@
     <string name="bluetooth_no_paired_devices">No hay dispositivos Bluetooth vinculados</string>
     <string name="bluetooth_permission_required">Hace falta el permiso de Bluetooth para ver los dispositivos vinculados</string>
     <string name="location_service_unavailable">No se ha podido activar el seguimiento en segundo plano. Abre la app y revisa los permisos.</string>
+    <string name="error_log_copy">Copiar</string>
+    <string name="error_log_copied">Registro copiado al portapapeles</string>
+    <string name="bluetooth_notification_connected_title">Bluetooth del coche conectado</string>
+    <string name="bluetooth_notification_connected_text">Conectado a %1$s</string>
+    <string name="bluetooth_notification_disconnected_title">Bluetooth del coche desconectado</string>
+    <string name="bluetooth_notification_disconnected_text">Desconectado de %1$s</string>
 </resources>

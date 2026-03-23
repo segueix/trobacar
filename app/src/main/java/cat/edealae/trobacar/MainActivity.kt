@@ -5,6 +5,8 @@ import android.app.AlertDialog
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -13,9 +15,9 @@ import android.location.LocationManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.widget.EditText
 import android.widget.ImageView
-import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -80,37 +82,37 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         try {
-        applyTheme()
-        super.onCreate(savedInstanceState)
-        CrashLogger.log(this, "MAIN", "MainActivity onCreate iniciat")
-        setContentView(R.layout.activity_main)
-        supportActionBar?.hide()
+            applyTheme()
+            super.onCreate(savedInstanceState)
+            CrashLogger.log(this, "MAIN", "MainActivity onCreate iniciat")
+            setContentView(R.layout.activity_main)
+            supportActionBar?.hide()
 
-        gpsIndicator = findViewById(R.id.gpsIndicator)
-        androidAutoIndicator = findViewById(R.id.androidAutoIndicator)
-        locationCard = findViewById(R.id.locationCard)
-        locationText = findViewById(R.id.locationText)
-        locationName = findViewById(R.id.locationName)
-        locationDateTime = findViewById(R.id.locationDateTime)
-        noLocationText = findViewById(R.id.noLocationText)
-        historyButton = findViewById(R.id.historyButton)
-        openMapsButton = findViewById(R.id.openMapsButton)
-        shareButton = findViewById(R.id.shareButton)
-        bluetoothStatusText = findViewById(R.id.bluetoothStatusText)
-        bluetoothNameInput = findViewById(R.id.bluetoothNameInput)
-        selectBluetoothButton = findViewById(R.id.selectBluetoothButton)
-        saveBluetoothButton = findViewById(R.id.saveBluetoothButton)
+            gpsIndicator = findViewById(R.id.gpsIndicator)
+            androidAutoIndicator = findViewById(R.id.androidAutoIndicator)
+            locationCard = findViewById(R.id.locationCard)
+            locationText = findViewById(R.id.locationText)
+            locationName = findViewById(R.id.locationName)
+            locationDateTime = findViewById(R.id.locationDateTime)
+            noLocationText = findViewById(R.id.noLocationText)
+            historyButton = findViewById(R.id.historyButton)
+            openMapsButton = findViewById(R.id.openMapsButton)
+            shareButton = findViewById(R.id.shareButton)
+            bluetoothStatusText = findViewById(R.id.bluetoothStatusText)
+            bluetoothNameInput = findViewById(R.id.bluetoothNameInput)
+            selectBluetoothButton = findViewById(R.id.selectBluetoothButton)
+            saveBluetoothButton = findViewById(R.id.saveBluetoothButton)
 
-        locationName.setOnClickListener { showEditNameDialog() }
-        openMapsButton.setOnClickListener { openSavedLocationInMaps() }
-        shareButton.setOnClickListener { shareLocation() }
-        historyButton.setOnClickListener { startActivity(Intent(this, HistoryActivity::class.java)) }
-        findViewById<CardView>(R.id.errorLogButton).setOnClickListener { showErrorLogDialog() }
-        selectBluetoothButton.setOnClickListener { showBondedBluetoothDevicesDialog() }
-        saveBluetoothButton.setOnClickListener { saveBluetoothDeviceName() }
+            locationName.setOnClickListener { showEditNameDialog() }
+            openMapsButton.setOnClickListener { openSavedLocationInMaps() }
+            shareButton.setOnClickListener { shareLocation() }
+            historyButton.setOnClickListener { startActivity(Intent(this, HistoryActivity::class.java)) }
+            findViewById<CardView>(R.id.errorLogButton).setOnClickListener { showErrorLogDialog() }
+            selectBluetoothButton.setOnClickListener { showBondedBluetoothDevicesDialog() }
+            saveBluetoothButton.setOnClickListener { saveBluetoothDeviceName() }
 
-        checkAndRequestPermissions()
-        CrashLogger.log(this, "MAIN", "MainActivity onCreate completat")
+            checkAndRequestPermissions()
+            CrashLogger.log(this, "MAIN", "MainActivity onCreate completat")
         } catch (e: Exception) {
             CrashLogger.logError(this, "MAIN", "Error a onCreate", e)
             throw e
@@ -181,13 +183,8 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
-        val intent = Intent(this, LocationService::class.java)
         try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                startForegroundService(intent)
-            } else {
-                startService(intent)
-            }
+            LocationService.startService(this, "main_activity")
         } catch (e: RuntimeException) {
             CrashLogger.logError(this, "MAIN", "No s'ha pogut iniciar el servei de localització", e)
             Toast.makeText(this, R.string.location_service_unavailable, Toast.LENGTH_LONG).show()
@@ -211,12 +208,12 @@ class MainActivity : AppCompatActivity() {
         val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
         val isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
         gpsIndicator.setImageResource(
-            if (isGpsEnabled) R.drawable.ic_circle_green else R.drawable.ic_circle_red
+            if (isGpsEnabled) R.drawable.ic_circle_white else R.drawable.ic_circle_red
         )
 
         val bluetoothConnected = prefs.getBoolean("bluetooth_car_connected", false)
         androidAutoIndicator.setImageResource(
-            if (bluetoothConnected) R.drawable.ic_circle_green else R.drawable.ic_circle_red
+            if (bluetoothConnected) R.drawable.ic_circle_white else R.drawable.ic_circle_red
         )
 
         val savedLat = prefs.getFloat("saved_latitude", 0f)
@@ -395,37 +392,32 @@ class MainActivity : AppCompatActivity() {
 
     private fun showErrorLogDialog() {
         val logContent = CrashLogger.readLog(this)
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_error_log, null)
+        val logTextView = dialogView.findViewById<TextView>(R.id.errorLogText)
+        val closeButton = dialogView.findViewById<MaterialButton>(R.id.closeErrorLogButton)
+        val clearButton = dialogView.findViewById<MaterialButton>(R.id.clearErrorLogButton)
+        val copyButton = dialogView.findViewById<ImageView>(R.id.copyErrorLogButton)
 
-        val textView = TextView(this).apply {
-            text = logContent
-            setPadding(32, 24, 32, 24)
-            textSize = 11f
-            typeface = android.graphics.Typeface.MONOSPACE
-            setTextIsSelectable(true)
-        }
+        logTextView.text = logContent
 
-        val scrollView = ScrollView(this).apply {
-            addView(textView)
-        }
-
-        AlertDialog.Builder(this)
+        val dialog = AlertDialog.Builder(this)
             .setTitle(getString(R.string.error_log_title))
-            .setView(scrollView)
-            .setPositiveButton(getString(R.string.error_log_close), null)
-            .setNeutralButton(getString(R.string.error_log_share)) { _, _ ->
-                val sendIntent = Intent().apply {
-                    action = Intent.ACTION_SEND
-                    putExtra(Intent.EXTRA_TEXT, logContent)
-                    putExtra(Intent.EXTRA_SUBJECT, "TrobaCar - Registre d'errors")
-                    type = "text/plain"
-                }
-                startActivity(Intent.createChooser(sendIntent, getString(R.string.open_with)))
-            }
-            .setNegativeButton(getString(R.string.error_log_clear)) { _, _ ->
-                CrashLogger.clearLog(this)
-                Toast.makeText(this, getString(R.string.error_log_cleared), Toast.LENGTH_SHORT).show()
-            }
-            .show()
+            .setView(dialogView)
+            .create()
+
+        closeButton.setOnClickListener { dialog.dismiss() }
+        clearButton.setOnClickListener {
+            CrashLogger.clearLog(this)
+            logTextView.text = CrashLogger.readLog(this)
+            Toast.makeText(this, getString(R.string.error_log_cleared), Toast.LENGTH_SHORT).show()
+        }
+        copyButton.setOnClickListener {
+            val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            clipboard.setPrimaryClip(ClipData.newPlainText(getString(R.string.error_log_title), logTextView.text))
+            Toast.makeText(this, getString(R.string.error_log_copied), Toast.LENGTH_SHORT).show()
+        }
+
+        dialog.show()
     }
 
     private fun applyTheme() {
