@@ -24,7 +24,7 @@
     <string name="save">Save</string>
     <string name="location_name_updated">Name updated</string>
     <string name="bluetooth_section_title">Car Bluetooth</string>
-    <string name="bluetooth_name_help">Enter your car Bluetooth name. When it disconnects, the app will automatically save your location.</string>
+    <string name="bluetooth_name_help">You can type your car Bluetooth name or select it from the list of paired devices. When it disconnects, the app will automatically save your location.</string>
     <string name="bluetooth_name_hint">Bluetooth name (e.g. Car Audio)</string>
     <string name="bluetooth_name_empty">Enter the car Bluetooth name</string>
     <string name="bluetooth_not_supported">This phone does not support compatible Bluetooth features</string>
@@ -35,5 +35,9 @@
     <string name="bluetooth_default_device">Default: %1$s</string>
     <string name="save_default_bluetooth">Save as default</string>
     <string name="bluetooth_default_saved">Default Bluetooth saved</string>
+    <string name="select_paired_bluetooth">Select paired Bluetooth</string>
+    <string name="bluetooth_select_dialog_title">Choose the car Bluetooth</string>
+    <string name="bluetooth_no_paired_devices">No paired Bluetooth devices found</string>
+    <string name="bluetooth_permission_required">Bluetooth permission is required to view paired devices</string>
     <string name="location_service_unavailable">Background tracking could not be activated. Open the app and check permissions.</string>
 </resources>

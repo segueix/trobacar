@@ -24,7 +24,7 @@
     <string name="save">Guardar</string>
     <string name="location_name_updated">Nombre actualizado</string>
     <string name="bluetooth_section_title">Bluetooth del coche</string>
-    <string name="bluetooth_name_help">Escribe el nombre del Bluetooth de tu coche. Cuando se desconecte, la app guardará la ubicación automáticamente.</string>
+    <string name="bluetooth_name_help">Puedes escribir el nombre del Bluetooth de tu coche o seleccionarlo de la lista de dispositivos vinculados. Cuando se desconecte, la app guardará la ubicación automáticamente.</string>
     <string name="bluetooth_name_hint">Nombre del Bluetooth (ej. Car Audio)</string>
     <string name="bluetooth_name_empty">Escribe el nombre del Bluetooth del coche</string>
     <string name="bluetooth_not_supported">Este móvil no tiene Bluetooth compatible</string>
@@ -35,5 +35,9 @@
     <string name="bluetooth_default_device">Predeterminado: %1$s</string>
     <string name="save_default_bluetooth">Guardar como predeterminado</string>
     <string name="bluetooth_default_saved">Bluetooth predeterminado guardado</string>
+    <string name="select_paired_bluetooth">Seleccionar Bluetooth vinculado</string>
+    <string name="bluetooth_select_dialog_title">Elige el Bluetooth del coche</string>
+    <string name="bluetooth_no_paired_devices">No hay dispositivos Bluetooth vinculados</string>
+    <string name="bluetooth_permission_required">Hace falta el permiso de Bluetooth para ver los dispositivos vinculados</string>
     <string name="location_service_unavailable">No se ha podido activar el seguimiento en segundo plano. Abre la app y revisa los permisos.</string>
 </resources>
