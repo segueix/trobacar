@@ -22,6 +22,7 @@ import android.os.IBinder
 import android.os.Looper
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 
 class LocationService : Service(), LocationListener {
 
@@ -29,6 +30,11 @@ class LocationService : Service(), LocationListener {
         private const val RESTART_REQUEST_CODE = 1001
         private const val DISCONNECT_DEBOUNCE_MS = 15_000L
         private const val MIN_SAVE_INTERVAL_MS = 2 * 60 * 1000L
+        private const val SERVICE_CHANNEL_ID = "TrobaCarLocationChannel"
+        private const val STATUS_CHANNEL_ID = "TrobaCarStatusChannel"
+        private const val NOTIFICATION_ID_FOREGROUND = 1
+        private const val NOTIFICATION_ID_BT_CONNECTED = 2
+        private const val NOTIFICATION_ID_BT_DISCONNECTED = 3
 
         fun startService(context: Context, reason: String) {
             val intent = Intent(context, LocationService::class.java).apply {
@@ -51,8 +57,6 @@ class LocationService : Service(), LocationListener {
 
     private lateinit var locationManager: LocationManager
     private val mainHandler = Handler(Looper.getMainLooper())
-    private val NOTIFICATION_ID = 1
-    private val CHANNEL_ID = "TrobaCarLocationChannel"
     private var isBluetoothReceiverRegistered = false
     private var isRunningInForeground = false
     private var shouldRestartService = false
@@ -82,12 +86,14 @@ class LocationService : Service(), LocationListener {
                         cancelPendingDisconnectSave(deviceName, "reconnexió detectada")
                         CrashLogger.log(this@LocationService, "BT", "Bluetooth connectat: $deviceName")
                         prefs.edit().putBoolean("bluetooth_car_connected", true).apply()
+                        showBluetoothStatusNotification(deviceName, true)
                     }
                 }
                 BluetoothDevice.ACTION_ACL_DISCONNECTED -> {
                     if (deviceName == savedName) {
                         CrashLogger.log(this@LocationService, "BT", "Bluetooth desconnectat: $deviceName - esperant debounce")
                         prefs.edit().putBoolean("bluetooth_car_connected", false).apply()
+                        showBluetoothStatusNotification(deviceName, false)
                         scheduleDisconnectSave(deviceName)
                     }
                 }
@@ -99,7 +105,7 @@ class LocationService : Service(), LocationListener {
         super.onCreate()
         CrashLogger.log(this, "SERVICE", "LocationService onCreate iniciat")
         locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        createNotificationChannel()
+        createNotificationChannels()
         registerBluetoothReceiver()
         cancelScheduledServiceRestart("servei creat")
         CrashLogger.log(this, "SERVICE", "LocationService onCreate completat")
@@ -130,7 +136,7 @@ class LocationService : Service(), LocationListener {
         if (isRunningInForeground) return true
 
         return try {
-            startForeground(NOTIFICATION_ID, createNotification())
+            startForeground(NOTIFICATION_ID_FOREGROUND, createForegroundNotification())
             isRunningInForeground = true
             shouldRestartService = true
             true
@@ -241,35 +247,65 @@ class LocationService : Service(), LocationListener {
         }
     }
 
-    private fun createNotificationChannel() {
+    private fun createNotificationChannels() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                CHANNEL_ID,
+            val serviceChannel = NotificationChannel(
+                SERVICE_CHANNEL_ID,
                 "TrobaCar Localització",
                 NotificationManager.IMPORTANCE_LOW
             ).apply {
                 description = "Servei per detectar la ubicació del cotxe"
             }
 
+            val statusChannel = NotificationChannel(
+                STATUS_CHANNEL_ID,
+                "TrobaCar Bluetooth",
+                NotificationManager.IMPORTANCE_DEFAULT
+            ).apply {
+                description = "Notificacions de connexió i desconnexió del Bluetooth del cotxe"
+            }
+
             val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.createNotificationChannel(channel)
+            notificationManager.createNotificationChannel(serviceChannel)
+            notificationManager.createNotificationChannel(statusChannel)
         }
     }
 
-    private fun createNotification() = NotificationCompat.Builder(this, CHANNEL_ID)
+    private fun createForegroundNotification() = NotificationCompat.Builder(this, SERVICE_CHANNEL_ID)
         .setContentTitle("TrobaCar actiu")
         .setContentText("Esperant desconnexió del Bluetooth del cotxe")
         .setSmallIcon(R.drawable.ic_notification)
-        .setContentIntent(
-            PendingIntent.getActivity(
-                this,
-                0,
-                Intent(this, MainActivity::class.java),
-                PendingIntent.FLAG_IMMUTABLE
-            )
-        )
+        .setContentIntent(createMainActivityPendingIntent())
         .setOngoing(true)
         .build()
+
+    private fun showBluetoothStatusNotification(deviceName: String, connected: Boolean) {
+        if (!canPostNotifications()) return
+
+        val titleRes = if (connected) R.string.bluetooth_notification_connected_title else R.string.bluetooth_notification_disconnected_title
+        val textRes = if (connected) R.string.bluetooth_notification_connected_text else R.string.bluetooth_notification_disconnected_text
+        val notificationId = if (connected) NOTIFICATION_ID_BT_CONNECTED else NOTIFICATION_ID_BT_DISCONNECTED
+
+        val notification = NotificationCompat.Builder(this, STATUS_CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_notification)
+            .setContentTitle(getString(titleRes))
+            .setContentText(getString(textRes, deviceName))
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setAutoCancel(true)
+            .setContentIntent(createMainActivityPendingIntent())
+            .build()
+
+        NotificationManagerCompat.from(this).notify(notificationId, notification)
+    }
+
+    private fun createMainActivityPendingIntent(): PendingIntent {
+        return PendingIntent.getActivity(
+            this,
+            0,
+            Intent(this, MainActivity::class.java),
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+    }
 
     override fun onDestroy() {
         CrashLogger.log(this, "SERVICE", "LocationService onDestroy")
@@ -345,5 +381,10 @@ class LocationService : Service(), LocationListener {
         } else {
             true
         }
+    }
+
+    private fun canPostNotifications(): Boolean {
+        return Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
+            ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
     }
 }

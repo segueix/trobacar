@@ -47,4 +47,10 @@
     <string name="error_log_share">Compartir</string>
     <string name="error_log_close">Tancar</string>
     <string name="location_service_unavailable">No s\'ha pogut activar el seguiment en segon pla. Obre l\'app i comprova els permisos.</string>
+    <string name="error_log_copy">Copiar</string>
+    <string name="error_log_copied">Registre copiat al porta-retalls</string>
+    <string name="bluetooth_notification_connected_title">Bluetooth del cotxe connectat</string>
+    <string name="bluetooth_notification_connected_text">Connectat a %1$s</string>
+    <string name="bluetooth_notification_disconnected_title">Bluetooth del cotxe desconnectat</string>
+    <string name="bluetooth_notification_disconnected_text">Desconnectat de %1$s</string>
 </resources>
