@@ -7,6 +7,7 @@ import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.location.LocationManager
 import android.net.Uri
@@ -25,6 +26,24 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 
 class MainActivity : AppCompatActivity() {
+
+    private val prefs by lazy {
+        getSharedPreferences("TrobaCar", Context.MODE_PRIVATE)
+    }
+
+    private val preferenceChangeListener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
+        when (key) {
+            "bluetooth_car_connected",
+            "default_bluetooth_device_name",
+            "saved_latitude",
+            "saved_longitude",
+            "saved_timestamp",
+            "location_name" -> runOnUiThread {
+                updateUI()
+                updateBluetoothSection()
+            }
+        }
+    }
 
     private lateinit var gpsIndicator: ImageView
     private lateinit var androidAutoIndicator: ImageView
@@ -98,10 +117,19 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+        prefs.registerOnSharedPreferenceChangeListener(preferenceChangeListener)
+    }
+
+    override fun onStop() {
+        prefs.unregisterOnSharedPreferenceChangeListener(preferenceChangeListener)
+        super.onStop()
+    }
+
     override fun onResume() {
         super.onResume()
 
-        val prefs = getSharedPreferences("TrobaCar", Context.MODE_PRIVATE)
         val themeChanged = prefs.getBoolean("theme_changed", false)
         if (themeChanged) {
             prefs.edit().putBoolean("theme_changed", false).apply()
@@ -186,7 +214,6 @@ class MainActivity : AppCompatActivity() {
             if (isGpsEnabled) R.drawable.ic_circle_green else R.drawable.ic_circle_red
         )
 
-        val prefs = getSharedPreferences("TrobaCar", Context.MODE_PRIVATE)
         val bluetoothConnected = prefs.getBoolean("bluetooth_car_connected", false)
         androidAutoIndicator.setImageResource(
             if (bluetoothConnected) R.drawable.ic_circle_green else R.drawable.ic_circle_red
@@ -216,7 +243,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateBluetoothSection() {
-        val prefs = getSharedPreferences("TrobaCar", Context.MODE_PRIVATE)
         val savedName = prefs.getString("default_bluetooth_device_name", null)
         val bluetoothConnected = prefs.getBoolean("bluetooth_car_connected", false)
 
