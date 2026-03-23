@@ -239,6 +239,22 @@ class LocationService : Service(), LocationListener {
                 } else {
                     CrashLogger.log(this, "SERVICE", "saveCurrentLocation: no hi ha ubicació prou bona disponible")
                 }
+            val location: Location? = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+                ?: locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
+
+            if (location != null) {
+                CrashLogger.log(this, "SERVICE", "Guardant ubicació: ${location.latitude}, ${location.longitude}")
+                prefs.edit()
+                    .putFloat("saved_latitude", location.latitude.toFloat())
+                    .putFloat("saved_longitude", location.longitude.toFloat())
+                    .putLong("saved_timestamp", now)
+                    .putString("saved_method", "Bluetooth")
+                    .putString("location_name", getString(R.string.current_parking))
+                    .apply()
+
+                LocationHistory.addLocation(this, location.latitude, location.longitude, "Bluetooth")
+            } else {
+                CrashLogger.log(this, "SERVICE", "saveCurrentLocation: no hi ha ubicació disponible")
             }
         } catch (e: SecurityException) {
             CrashLogger.logError(this, "SERVICE", "SecurityException a saveCurrentLocation", e)
