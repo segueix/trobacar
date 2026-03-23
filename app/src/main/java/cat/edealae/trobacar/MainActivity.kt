@@ -181,13 +181,8 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
-        val intent = Intent(this, LocationService::class.java)
         try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                startForegroundService(intent)
-            } else {
-                startService(intent)
-            }
+            LocationService.startService(this, "main_activity")
         } catch (e: RuntimeException) {
             CrashLogger.logError(this, "MAIN", "No s'ha pogut iniciar el servei de localització", e)
             Toast.makeText(this, R.string.location_service_unavailable, Toast.LENGTH_LONG).show()
