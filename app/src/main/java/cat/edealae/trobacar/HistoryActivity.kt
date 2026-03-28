@@ -16,10 +16,10 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
@@ -196,7 +196,7 @@ class HistoryActivity : AppCompatActivity() {
         }
 
         val deviceNames = devices.mapNotNull { it.name }.toTypedArray()
-        AlertDialog.Builder(this)
+        MaterialAlertDialogBuilder(this, R.style.Theme_TrobaCar_Dialog)
             .setTitle(R.string.bluetooth_select_dialog_title)
             .setItems(deviceNames) { _, which ->
                 val prefs = getSharedPreferences("TrobaCar", Context.MODE_PRIVATE)
@@ -219,7 +219,7 @@ class HistoryActivity : AppCompatActivity() {
         val currentDelay = prefs.getInt("disconnect_delay_seconds", 0)
         val checkedItem = delayOptions.indexOf(currentDelay).coerceAtLeast(0)
 
-        AlertDialog.Builder(this)
+        MaterialAlertDialogBuilder(this, R.style.Theme_TrobaCar_Dialog)
             .setTitle(R.string.disconnect_delay_title)
             .setSingleChoiceItems(delayLabels, checkedItem) { dialog, which ->
                 prefs.edit().putInt("disconnect_delay_seconds", delayOptions[which]).apply()
@@ -254,7 +254,7 @@ class HistoryActivity : AppCompatActivity() {
     }
     
     private fun deleteEntry(entry: LocationEntry) {
-        AlertDialog.Builder(this)
+        MaterialAlertDialogBuilder(this, R.style.Theme_TrobaCar_Dialog)
             .setMessage("Vols esborrar aquesta ubicació?")
             .setPositiveButton(R.string.delete) { _, _ ->
                 LocationHistory.deleteEntry(this, entry)
@@ -269,7 +269,7 @@ class HistoryActivity : AppCompatActivity() {
         input.setText(entry.customName)
         input.setSelectAllOnFocus(true)
         
-        AlertDialog.Builder(this)
+        MaterialAlertDialogBuilder(this, R.style.Theme_TrobaCar_Dialog)
             .setTitle("Editar nom")
             .setView(input)
             .setPositiveButton("Guardar") { _, _ ->
@@ -285,7 +285,7 @@ class HistoryActivity : AppCompatActivity() {
     }
 
     private fun showClearConfirmDialog() {
-        AlertDialog.Builder(this)
+        MaterialAlertDialogBuilder(this, R.style.Theme_TrobaCar_Dialog)
             .setMessage(R.string.delete_confirmation)
             .setPositiveButton(R.string.delete) { _, _ ->
                 LocationHistory.clearHistory(this)

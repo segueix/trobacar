@@ -214,7 +214,7 @@
                         android:textStyle="bold"
                         android:layout_marginEnd="8dp"
                         app:cornerRadius="12dp"
-                        style="@style/Widget.MaterialComponents.Button" />
+                        style="@style/Widget.Material3.Button" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/shareButton"
@@ -226,7 +226,7 @@
                         app:iconPadding="0dp"
                         app:cornerRadius="12dp"
                         app:backgroundTint="#43A047"
-                        style="@style/Widget.MaterialComponents.Button" />
+                        style="@style/Widget.Material3.Button" />
 
                 </LinearLayout>
 
@@ -307,7 +307,7 @@
                         android:text="@string/change_bluetooth"
                         android:textSize="12sp"
                         app:cornerRadius="12dp"
-                        style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+                        style="@style/Widget.Material3.Button.OutlinedButton" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/summaryChangeDelayButton"
@@ -318,7 +318,7 @@
                         android:text="@string/change_delay"
                         android:textSize="12sp"
                         app:cornerRadius="12dp"
-                        style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+                        style="@style/Widget.Material3.Button.OutlinedButton" />
 
                 </LinearLayout>
 
@@ -375,7 +375,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
                     android:hint="@string/bluetooth_name_hint"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/bluetoothNameInput"
@@ -393,7 +393,7 @@
                     android:layout_marginTop="12dp"
                     android:text="@string/select_paired_bluetooth"
                     app:cornerRadius="12dp"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+                    style="@style/Widget.Material3.Button.OutlinedButton" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/saveBluetoothButton"
@@ -402,7 +402,7 @@
                     android:layout_marginTop="12dp"
                     android:text="@string/save_default_bluetooth"
                     app:cornerRadius="12dp"
-                    style="@style/Widget.MaterialComponents.Button" />
+                    style="@style/Widget.Material3.Button" />
 
                 <!-- Selector de retard de desconnexió -->
                 <TextView
@@ -429,7 +429,7 @@
                     android:layout_marginTop="12dp"
                     android:text="@string/disconnect_delay_immediate"
                     app:cornerRadius="12dp"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+                    style="@style/Widget.Material3.Button.OutlinedButton" />
 
             </LinearLayout>
 

@@ -2,11 +2,15 @@
 <resources>
     <!-- Tema per defecte (blau clar) -->
     <style name="Theme.TrobaCar" parent="Theme.TrobaCar.Light.Blue" />
-    
+
+    <!-- Overlay de diàleg Material3 forçat per evitar barreja AppCompat/Material -->
+    <style name="Theme.TrobaCar.Dialog" parent="Theme.Material3.DayNight.Dialog">
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.Material3.MaterialAlertDialog</item>
+    </style>
+
     <!-- Temes clars -->
-    <style name="Theme.TrobaCar.Light.Blue" parent="Theme.MaterialComponents.Light.DarkActionBar">
+    <style name="Theme.TrobaCar.Light.Blue" parent="Theme.Material3.Light">
         <item name="colorPrimary">@color/primary_blue</item>
-        <item name="colorPrimaryVariant">@color/primary_blue_dark</item>
         <item name="colorOnPrimary">@color/white</item>
         <item name="colorSecondary">@color/primary_blue_light</item>
         <item name="colorSurface">@color/surface_light</item>
@@ -16,10 +20,9 @@
         <item name="android:textColorPrimary">@color/text_primary_light</item>
         <item name="android:textColorSecondary">@color/text_secondary_light</item>
     </style>
-    
-    <style name="Theme.TrobaCar.Light.Green" parent="Theme.MaterialComponents.Light.DarkActionBar">
+
+    <style name="Theme.TrobaCar.Light.Green" parent="Theme.Material3.Light">
         <item name="colorPrimary">@color/primary_green</item>
-        <item name="colorPrimaryVariant">@color/primary_green_dark</item>
         <item name="colorOnPrimary">@color/white</item>
         <item name="colorSecondary">@color/primary_green_light</item>
         <item name="colorSurface">@color/surface_light</item>
@@ -29,10 +32,9 @@
         <item name="android:textColorPrimary">@color/text_primary_light</item>
         <item name="android:textColorSecondary">@color/text_secondary_light</item>
     </style>
-    
-    <style name="Theme.TrobaCar.Light.Red" parent="Theme.MaterialComponents.Light.DarkActionBar">
+
+    <style name="Theme.TrobaCar.Light.Red" parent="Theme.Material3.Light">
         <item name="colorPrimary">@color/primary_red</item>
-        <item name="colorPrimaryVariant">@color/primary_red_dark</item>
         <item name="colorOnPrimary">@color/white</item>
         <item name="colorSecondary">@color/primary_red_light</item>
         <item name="colorSurface">@color/surface_light</item>
@@ -42,10 +44,9 @@
         <item name="android:textColorPrimary">@color/text_primary_light</item>
         <item name="android:textColorSecondary">@color/text_secondary_light</item>
     </style>
-    
-    <style name="Theme.TrobaCar.Light.Purple" parent="Theme.MaterialComponents.Light.DarkActionBar">
+
+    <style name="Theme.TrobaCar.Light.Purple" parent="Theme.Material3.Light">
         <item name="colorPrimary">@color/primary_purple</item>
-        <item name="colorPrimaryVariant">@color/primary_purple_dark</item>
         <item name="colorOnPrimary">@color/white</item>
         <item name="colorSecondary">@color/primary_purple_light</item>
         <item name="colorSurface">@color/surface_light</item>
@@ -55,11 +56,10 @@
         <item name="android:textColorPrimary">@color/text_primary_light</item>
         <item name="android:textColorSecondary">@color/text_secondary_light</item>
     </style>
-    
+
     <!-- Temes foscos -->
-    <style name="Theme.TrobaCar.Dark.Blue" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+    <style name="Theme.TrobaCar.Dark.Blue" parent="Theme.Material3.Dark">
         <item name="colorPrimary">@color/primary_blue_light</item>
-        <item name="colorPrimaryVariant">@color/primary_blue</item>
         <item name="colorOnPrimary">@color/black</item>
         <item name="colorSecondary">@color/primary_blue_light</item>
         <item name="colorSurface">@color/surface_dark</item>
@@ -69,10 +69,9 @@
         <item name="android:textColorPrimary">@color/text_primary_dark</item>
         <item name="android:textColorSecondary">@color/text_secondary_dark</item>
     </style>
-    
-    <style name="Theme.TrobaCar.Dark.Green" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+
+    <style name="Theme.TrobaCar.Dark.Green" parent="Theme.Material3.Dark">
         <item name="colorPrimary">@color/primary_green_light</item>
-        <item name="colorPrimaryVariant">@color/primary_green</item>
         <item name="colorOnPrimary">@color/black</item>
         <item name="colorSecondary">@color/primary_green_light</item>
         <item name="colorSurface">@color/surface_dark</item>
@@ -82,10 +81,9 @@
         <item name="android:textColorPrimary">@color/text_primary_dark</item>
         <item name="android:textColorSecondary">@color/text_secondary_dark</item>
     </style>
-    
-    <style name="Theme.TrobaCar.Dark.Red" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+
+    <style name="Theme.TrobaCar.Dark.Red" parent="Theme.Material3.Dark">
         <item name="colorPrimary">@color/primary_red_light</item>
-        <item name="colorPrimaryVariant">@color/primary_red</item>
         <item name="colorOnPrimary">@color/black</item>
         <item name="colorSecondary">@color/primary_red_light</item>
         <item name="colorSurface">@color/surface_dark</item>
@@ -95,10 +93,9 @@
         <item name="android:textColorPrimary">@color/text_primary_dark</item>
         <item name="android:textColorSecondary">@color/text_secondary_dark</item>
     </style>
-    
-    <style name="Theme.TrobaCar.Dark.Purple" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+
+    <style name="Theme.TrobaCar.Dark.Purple" parent="Theme.Material3.Dark">
         <item name="colorPrimary">@color/primary_purple_light</item>
-        <item name="colorPrimaryVariant">@color/primary_purple</item>
         <item name="colorOnPrimary">@color/black</item>
         <item name="colorSecondary">@color/primary_purple_light</item>
         <item name="colorSurface">@color/surface_dark</item>

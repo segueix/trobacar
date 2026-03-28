@@ -1,7 +1,6 @@
 package cat.edealae.trobacar
 
 import android.Manifest
-import android.app.AlertDialog
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
@@ -25,6 +24,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import androidx.core.graphics.ColorUtils
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
@@ -216,10 +216,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun hasLocationPermission(): Boolean {
-        return ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
-            ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
-    }
+    private fun hasLocationPermission(): Boolean = LocationPermissionHelper.hasLocationPermission(this)
 
     private fun hasBluetoothConnectPermission(): Boolean {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -232,8 +229,8 @@ class MainActivity : AppCompatActivity() {
     private fun updateUI() {
         applyStatusCardBackground()
 
-        val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        val isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+        val locationManager = getSystemService(Context.LOCATION_SERVICE) as? LocationManager
+        val isGpsEnabled = locationManager?.isProviderEnabled(LocationManager.GPS_PROVIDER) == true
         gpsIndicator.setImageResource(
             if (isGpsEnabled) R.drawable.ic_circle_green else R.drawable.ic_circle_red
         )
@@ -310,7 +307,7 @@ class MainActivity : AppCompatActivity() {
             getString(R.string.battery_help_currently_enabled)
         }
 
-        AlertDialog.Builder(this)
+        MaterialAlertDialogBuilder(this, R.style.Theme_TrobaCar_Dialog)
             .setTitle(R.string.battery_help_title)
             .setMessage(getString(R.string.battery_help_message, statusText, manufacturerTip))
             .setPositiveButton(R.string.battery_help_open_settings) { _, _ ->
@@ -393,7 +390,7 @@ class MainActivity : AppCompatActivity() {
         val currentDelay = prefs.getInt("disconnect_delay_seconds", 0)
         val checkedItem = delayOptions.indexOf(currentDelay).coerceAtLeast(0)
 
-        AlertDialog.Builder(this)
+        MaterialAlertDialogBuilder(this, R.style.Theme_TrobaCar_Dialog)
             .setTitle(R.string.disconnect_delay_title)
             .setSingleChoiceItems(delayLabels, checkedItem) { dialog, which ->
                 prefs.edit().putInt("disconnect_delay_seconds", delayOptions[which]).apply()
@@ -439,7 +436,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         val deviceNames = devices.mapNotNull { it.name }.toTypedArray()
-        AlertDialog.Builder(this)
+        MaterialAlertDialogBuilder(this, R.style.Theme_TrobaCar_Dialog)
             .setTitle(R.string.bluetooth_select_dialog_title)
             .setItems(deviceNames) { _, which ->
                 bluetoothNameInput.setText(deviceNames[which])
@@ -524,7 +521,7 @@ class MainActivity : AppCompatActivity() {
         input.setText(currentName)
         input.setSelectAllOnFocus(true)
 
-        AlertDialog.Builder(this)
+        MaterialAlertDialogBuilder(this, R.style.Theme_TrobaCar_Dialog)
             .setTitle(getString(R.string.edit_name))
             .setView(input)
             .setPositiveButton(getString(R.string.save)) { _, _ ->
@@ -549,7 +546,7 @@ class MainActivity : AppCompatActivity() {
 
         logTextView.text = logContent
 
-        val dialog = AlertDialog.Builder(this)
+        val dialog = MaterialAlertDialogBuilder(this, R.style.Theme_TrobaCar_Dialog)
             .setTitle(getString(R.string.error_log_title))
             .setView(dialogView)
             .create()
