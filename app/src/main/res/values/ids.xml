@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- IDs declarats explícitament per mantenir la taula d'IDs estable entre builds. -->
+    <item name="statusCard" type="id" />
+    <item name="gpsIndicator" type="id" />
+    <item name="androidAutoIndicator" type="id" />
+    <item name="locationCard" type="id" />
+    <item name="locationText" type="id" />
+    <item name="locationName" type="id" />
+    <item name="locationDateTime" type="id" />
+    <item name="noLocationText" type="id" />
+    <item name="errorLogButton" type="id" />
+    <item name="closeErrorLogButton" type="id" />
+    <item name="clearErrorLogButton" type="id" />
+    <item name="copyErrorLogButton" type="id" />
+</resources>

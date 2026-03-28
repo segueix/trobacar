@@ -61,7 +61,7 @@ class LocationService : Service(), LocationListener {
         }
     }
 
-    private lateinit var locationManager: LocationManager
+    private var locationManager: LocationManager? = null
     private val mainHandler = Handler(Looper.getMainLooper())
     private var isBluetoothReceiverRegistered = false
     private var isRunningInForeground = false
@@ -115,7 +115,10 @@ class LocationService : Service(), LocationListener {
     override fun onCreate() {
         super.onCreate()
         CrashLogger.log(this, "SERVICE", "LocationService onCreate iniciat")
-        locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        locationManager = getSystemService(Context.LOCATION_SERVICE) as? LocationManager
+        if (locationManager == null) {
+            CrashLogger.log(this, "SERVICE", "LocationManager nul a onCreate")
+        }
         createNotificationChannels()
         registerBluetoothReceiver()
         cancelScheduledServiceRestart("servei creat")
@@ -164,14 +167,19 @@ class LocationService : Service(), LocationListener {
         if (!hasLocationPermission()) return
 
         try {
-            locationManager.requestLocationUpdates(
+            val manager = locationManager ?: run {
+                CrashLogger.log(this, "SERVICE", "LocationManager nul a startLocationUpdates")
+                return
+            }
+
+            manager.requestLocationUpdates(
                 LocationManager.GPS_PROVIDER,
                 5000L,
                 10f,
                 this
             )
 
-            locationManager.requestLocationUpdates(
+            manager.requestLocationUpdates(
                 LocationManager.NETWORK_PROVIDER,
                 5000L,
                 10f,
@@ -319,7 +327,7 @@ class LocationService : Service(), LocationListener {
             completed = true
             mainHandler.removeCallbacksAndMessages(freshLocationListener)
             try {
-                locationManager.removeUpdates(freshLocationListener)
+                locationManager?.removeUpdates(freshLocationListener)
             } catch (_: Exception) {
             }
             callback(result)
@@ -353,7 +361,7 @@ class LocationService : Service(), LocationListener {
 
         candidateProviders.forEach { provider ->
             try {
-                locationManager.requestLocationUpdates(provider, 0L, 0f, freshLocationListener, Looper.getMainLooper())
+                locationManager?.requestLocationUpdates(provider, 0L, 0f, freshLocationListener, Looper.getMainLooper())
             } catch (e: Exception) {
                 CrashLogger.logError(this, "SERVICE", "No s'ha pogut demanar un fix recent de $provider", e)
             }
@@ -362,8 +370,11 @@ class LocationService : Service(), LocationListener {
     }
 
     private fun getLastKnownLocationSafely(provider: String): Location? {
+        if (!LocationPermissionHelper.hasLocationPermission(this)) return null
+        val manager = locationManager ?: return null
+
         return try {
-            locationManager.getLastKnownLocation(provider)
+            manager.getLastKnownLocation(provider)
         } catch (_: SecurityException) {
             null
         } catch (_: IllegalArgumentException) {
@@ -418,8 +429,9 @@ class LocationService : Service(), LocationListener {
     }
 
     private fun isProviderEnabled(provider: String): Boolean {
+        val manager = locationManager ?: return false
         return try {
-            locationManager.isProviderEnabled(provider)
+            manager.isProviderEnabled(provider)
         } catch (_: Exception) {
             false
         }
@@ -491,7 +503,7 @@ class LocationService : Service(), LocationListener {
         super.onDestroy()
         isRunningInForeground = false
         try {
-            locationManager.removeUpdates(this)
+            locationManager?.removeUpdates(this)
         } catch (_: Exception) {
         }
         if (isBluetoothReceiverRegistered) {
@@ -548,10 +560,7 @@ class LocationService : Service(), LocationListener {
         delayedDisconnectSaves.clear()
     }
 
-    private fun hasLocationPermission(): Boolean {
-        return ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
-            ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
-    }
+    private fun hasLocationPermission(): Boolean = LocationPermissionHelper.hasLocationPermission(this)
 
     private fun hasBluetoothConnectPermission(): Boolean {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
