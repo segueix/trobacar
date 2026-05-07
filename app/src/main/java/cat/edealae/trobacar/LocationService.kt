@@ -133,13 +133,14 @@ class LocationService : Service(), LocationListener {
             shouldRestartService = false
             CrashLogger.log(this, "SERVICE", "Aturant servei: sense permís de localització")
             stopSelf()
-            return START_STICKY
+            return START_NOT_STICKY
         }
 
         if (!ensureForegroundStarted()) {
-            scheduleServiceRestart("foreground no disponible")
+            shouldRestartService = false
+            CrashLogger.log(this, "SERVICE", "No es reprograma el servei: Android no permet iniciar-lo ara")
             stopSelf()
-            return START_STICKY
+            return START_NOT_STICKY
         }
 
         startLocationUpdates()
@@ -534,9 +535,20 @@ class LocationService : Service(), LocationListener {
             restartIntent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
-        val triggerAtMillis = System.currentTimeMillis() + 10_000L
-        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAtMillis, pendingIntent)
-        CrashLogger.log(this, "SERVICE", "Reinici del servei programat en 10s: $reason")
+        val triggerAtMillis = System.currentTimeMillis() + 30_000L
+
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAtMillis, pendingIntent)
+            } else {
+                alarmManager.set(AlarmManager.RTC_WAKEUP, triggerAtMillis, pendingIntent)
+            }
+            CrashLogger.log(this, "SERVICE", "Reinici del servei programat en ~30s: $reason")
+        } catch (e: SecurityException) {
+            CrashLogger.logError(this, "SERVICE", "Android no permet programar el reinici del servei", e)
+        } catch (e: RuntimeException) {
+            CrashLogger.logError(this, "SERVICE", "No s'ha pogut programar el reinici del servei", e)
+        }
     }
 
     private fun cancelScheduledServiceRestart(reason: String) {
