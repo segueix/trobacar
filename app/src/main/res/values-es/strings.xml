@@ -16,6 +16,7 @@
     <string name="delete">Borrar</string>
     <string name="cancel">Cancelar</string>
     <string name="open_with">Abrir con...</string>
+    <string name="open_map">Abrir mapa</string>
     <string name="no_map_apps">No hay apps de mapas disponibles</string>
     <string name="location_saved">Ubicación guardada (%1$s) - %2$s</string>
     <string name="current_parking">Aparcamiento actual</string>

@@ -15,6 +15,16 @@ class ServiceRestartReceiver : BroadcastReceiver() {
 
         val reason = intent.getStringExtra("restart_reason") ?: "alarm"
         CrashLogger.log(context, "SERVICE", "Receiver de reinici activat: $reason")
-        LocationService.startService(context, "restart:$reason")
+
+        if (!LocationPermissionHelper.hasLocationPermission(context)) {
+            CrashLogger.log(context, "SERVICE", "Reinici ignorat: falta permís de localització")
+            return
+        }
+
+        try {
+            LocationService.startService(context, "restart:$reason")
+        } catch (e: RuntimeException) {
+            CrashLogger.logError(context, "SERVICE", "No s'ha pogut reiniciar el servei", e)
+        }
     }
 }
