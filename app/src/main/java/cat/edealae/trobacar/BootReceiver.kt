@@ -18,7 +18,11 @@ class BootReceiver : BroadcastReceiver() {
                         return
                     }
 
-                    CrashLogger.log(context, "BOOT", "Esdeveniment ${intent.action} - iniciant servei en segon pla")
+                    CrashLogger.log(
+                        context,
+                        "BOOT",
+                        "Esdeveniment ${intent.action} - Android no permet obrir la pantalla principal automàticament; iniciant només el servei en segon pla"
+                    )
                     LocationService.startService(context, "boot:${intent.action}")
                 } catch (e: RuntimeException) {
                     CrashLogger.logError(context, "BOOT", "Android ha bloquejat l'inici en segon pla després de ${intent.action}", e)

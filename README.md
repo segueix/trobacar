@@ -8,14 +8,14 @@ Aplicació Android per trobar el teu cotxe després de desconnectar-te d'Android
 - **Detecció Android Auto**: Indicador verd/vermell que mostra si estàs connectat a Android Auto
 - **Guardar ubicació automàticament**: Quan et desconnectes d'Android Auto, l'app guarda automàticament la ubicació del cotxe
 - **Historial d'ubicacions**: Guarda automàticament fins a 50 ubicacions anteriors
-- **Inici automàtic**: L'app s'inicia automàticament quan encens el mòbil
+- **Inici automàtic del servei**: Android permet que PinPark rebi l'arrencada del mòbil i iniciï el servei de localització en segon pla; la pantalla principal no es pot obrir sola des del boot en versions modernes d'Android
 - **Integració amb Google Maps**: Clica qualsevol ubicació per obrir-la directament a Google Maps
 - **Neteja automàtica**: Cada vegada que et connectes a Android Auto, l'ubicació anterior s'esborra
 
 ## Com funciona
 
 1. L'aplicació s'executa en segon pla amb un servei de localització
-2. L'app s'inicia automàticament quan encens el mòbil
+2. El servei de localització s'inicia automàticament quan encens el mòbil, si Android i els permisos ho permeten. La pantalla principal només s'obre quan la toques manualment
 3. Quan connectes el mòbil a Android Auto:
    - L'indicador d'Android Auto es posa en verd
    - S'esborra qualsevol ubicació guardada anteriorment
@@ -96,6 +96,11 @@ TrobaCar/
 - Verifica que el GPS està activat
 - Assegura't que l'app té permisos de localització
 - Comprova que l'indicador GPS està en verd abans de desconnectar-te
+
+### L'app no s'obre sola quan encenc el mòbil
+- És el comportament esperat a Android modern: el `BootReceiver` pot rebre l'arrencada i iniciar el `LocationService`, però el sistema no permet obrir la pantalla principal automàticament des d'un receptor de boot.
+- Per comprovar que funciona, revisa que aparegui la notificació del servei en segon pla o obre l'app manualment després d'arrencar per veure l'estat.
+- En alguns fabricants també cal activar l'inici automàtic o treure les restriccions de bateria de PinPark.
 
 ### L'app no s'obre quan clico la ubicació
 - Assegura't que Google Maps està instal·lat
