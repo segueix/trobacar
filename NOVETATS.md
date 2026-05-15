@@ -27,13 +27,13 @@ L'aplicació ara guarda automàticament totes les ubicacions del cotxe en un his
 
 ## Inici Automàtic al Boot
 
-L'aplicació ara s'inicia automàticament quan encens el mòbil.
+El servei de localització ara s'inicia automàticament quan encens el mòbil, sempre que Android i els permisos ho permetin. La pantalla principal no es pot obrir sola des del boot en versions modernes d'Android.
 
 ### Com funciona:
 1. **BootReceiver.kt**: BroadcastReceiver que escolta l'event `BOOT_COMPLETED`
 2. Quan el sistema Android es reinicia, l'app:
    - Rep la notificació de boot
-   - Inicia automàticament el LocationService
+   - Inicia automàticament el LocationService en segon pla
    - Comença a monitoritzar Android Auto
 3. El servei continua executant-se en segon pla fins que es tanqui manualment
 
@@ -41,7 +41,7 @@ L'aplicació ara s'inicia automàticament quan encens el mòbil.
 - `RECEIVE_BOOT_COMPLETED`: Permís per rebre notificacions de boot del sistema
 
 ### Avantatges:
-- No cal obrir l'app manualment després de reiniciar el mòbil
+- No cal obrir la pantalla principal manualment perquè el servei intenti arrencar després de reiniciar el mòbil; Android pot mostrar només la notificació del servei i bloquejar l'obertura automàtica de la UI
 - El servei està sempre disponible per detectar connexions d'Android Auto
 - Experiència d'usuari sense fricció
 
