@@ -13,8 +13,8 @@ class BootReceiver : BroadcastReceiver() {
             Intent.ACTION_LOCKED_BOOT_COMPLETED,
             Intent.ACTION_MY_PACKAGE_REPLACED -> {
                 try {
-                    if (!LocationPermissionHelper.hasLocationPermission(context)) {
-                        CrashLogger.log(context, "BOOT", "No s'inicia el servei: falta permís de localització")
+                    if (!LocationPermissionHelper.hasAlwaysOnLocationPermission(context)) {
+                        CrashLogger.log(context, "BOOT", "No s'inicia el servei: falta el permís de localització sempre activa")
                         return
                     }
 

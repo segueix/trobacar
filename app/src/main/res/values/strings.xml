@@ -48,6 +48,10 @@
     <string name="error_log_share">Compartir</string>
     <string name="error_log_close">Tancar</string>
     <string name="location_service_unavailable">No s\'ha pogut activar el seguiment en segon pla. Obre l\'app i comprova els permisos.</string>
+    <string name="location_permission_required">Cal el permís de localització perquè PinPark funcioni en segon pla</string>
+    <string name="background_location_title">Permís de localització sempre activa</string>
+    <string name="background_location_message">Perquè PinPark es torni a activar després de reiniciar el mòbil i continuï detectant el cotxe en segon pla, activa la ubicació “Permetre sempre” als permisos de l\'app.</string>
+    <string name="background_location_open_settings">Obrir permisos</string>
     <string name="error_log_copy">Copiar</string>
     <string name="error_log_copied">Registre copiat al porta-retalls</string>
     <string name="bluetooth_notification_connected_title">Bluetooth del cotxe connectat</string>

@@ -82,13 +82,11 @@ class MainActivity : AppCompatActivity() {
 
     private val locationPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
-    ) { permissions ->
-        if (permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true ||
-            permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true) {
-            startLocationService()
-            updateUI()
+    ) {
+        if (hasLocationPermission()) {
+            continueAfterPermissionCheck()
         } else {
-            Toast.makeText(this, "Permisos de localització necessaris", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, R.string.location_permission_required, Toast.LENGTH_LONG).show()
         }
     }
 
@@ -197,9 +195,27 @@ class MainActivity : AppCompatActivity() {
         if (permissionsToRequest.isNotEmpty()) {
             locationPermissionLauncher.launch(permissionsToRequest.toTypedArray())
         } else {
-            startLocationService()
-            updateUI()
+            continueAfterPermissionCheck()
         }
+    }
+
+    private fun continueAfterPermissionCheck() {
+        startLocationService()
+        maybePromptBackgroundLocationPermission()
+        updateUI()
+    }
+
+    private fun maybePromptBackgroundLocationPermission() {
+        if (!LocationPermissionHelper.shouldRequestBackgroundLocationPermission(this)) return
+
+        MaterialAlertDialogBuilder(this, R.style.Theme_TrobaCar_Dialog)
+            .setTitle(R.string.background_location_title)
+            .setMessage(R.string.background_location_message)
+            .setPositiveButton(R.string.background_location_open_settings) { _, _ ->
+                LocationPermissionHelper.openAppLocationSettings(this)
+            }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
     }
 
     private fun startLocationService() {
