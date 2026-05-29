@@ -26,6 +26,24 @@ object LocationPermissionHelper {
         return hasFineLocation || hasCoarseLocation
     }
 
+    fun hasBackgroundLocationPermission(context: Context): Boolean {
+        return Build.VERSION.SDK_INT < Build.VERSION_CODES.Q ||
+            ActivityCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_BACKGROUND_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    fun hasAlwaysOnLocationPermission(context: Context): Boolean {
+        return hasLocationPermission(context) && hasBackgroundLocationPermission(context)
+    }
+
+    fun shouldRequestBackgroundLocationPermission(context: Context): Boolean {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
+            hasLocationPermission(context) &&
+            !hasBackgroundLocationPermission(context)
+    }
+
     fun requestLocationPermissions(activity: Activity, requestCode: Int) {
         ActivityCompat.requestPermissions(
             activity,
