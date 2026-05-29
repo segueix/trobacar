@@ -42,9 +42,20 @@ class LocationService : Service(), LocationListener {
         private const val FALLBACK_LOCATION_ACCURACY_METERS = 150f
         private const val FRESH_FIX_TIMEOUT_MS = 10_000L
 
-        fun startService(context: Context, reason: String) {
+        const val EXTRA_BT_ACTION = "bt_action"
+        const val EXTRA_BT_DEVICE = "bt_device"
+        private const val BT_EVENT_DEDUP_WINDOW_MS = 3_000L
+
+        fun startService(
+            context: Context,
+            reason: String,
+            btAction: String? = null,
+            btDeviceName: String? = null
+        ) {
             val intent = Intent(context, LocationService::class.java).apply {
                 putExtra("start_reason", reason)
+                if (btAction != null) putExtra(EXTRA_BT_ACTION, btAction)
+                if (btDeviceName != null) putExtra(EXTRA_BT_DEVICE, btDeviceName)
             }
 
             try {
@@ -69,6 +80,11 @@ class LocationService : Service(), LocationListener {
 
     private val delayedDisconnectSaves = mutableMapOf<String, Runnable>()
 
+    // Deduplicació d'esdeveniments BT: el receiver dinàmic i el del manifest poden
+    // rebre el mateix esdeveniment; evitem processar-lo dues vegades.
+    private var lastHandledBtKey: String? = null
+    private var lastHandledBtAt: Long = 0L
+
     // Buffer de ubicacions recents per al retard de desconnexió
     private data class TimestampedLocation(val location: Location, val timestamp: Long)
     private val locationBuffer = mutableListOf<TimestampedLocation>()
@@ -84,30 +100,47 @@ class LocationService : Service(), LocationListener {
                 intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
             }
             val deviceName = if (hasBluetoothConnectPermission()) device?.name else null
-            val prefs = getSharedPreferences("TrobaCar", Context.MODE_PRIVATE)
-            val savedName = prefs.getString("default_bluetooth_device_name", null)
+            handleBluetoothEvent(intent.action, deviceName, "receiver dinàmic")
+        }
+    }
 
-            CrashLogger.log(this@LocationService, "BT", "Event BT: action=${intent.action}, device=$deviceName, saved=$savedName")
+    /**
+     * Processa un esdeveniment de connexió/desconnexió de Bluetooth. El criden tant
+     * el receiver dinàmic (mentre el servei viu) com [onStartCommand] quan el receiver
+     * del manifest desperta el servei aturat. La deduplicació evita processar dos cops
+     * el mateix esdeveniment quan ambdós camins coincideixen.
+     */
+    private fun handleBluetoothEvent(action: String?, deviceName: String?, source: String) {
+        if (action == null) return
 
-            if (savedName.isNullOrEmpty() || deviceName == null) return
+        val prefs = getSharedPreferences("TrobaCar", Context.MODE_PRIVATE)
+        val savedName = prefs.getString("default_bluetooth_device_name", null)
 
-            when (intent.action) {
-                BluetoothDevice.ACTION_ACL_CONNECTED -> {
-                    if (deviceName == savedName) {
-                        cancelPendingDisconnectSave(deviceName, "reconnexió detectada")
-                        CrashLogger.log(this@LocationService, "BT", "Bluetooth connectat: $deviceName")
-                        prefs.edit().putBoolean("bluetooth_car_connected", true).apply()
-                        showBluetoothStatusNotification(deviceName, true)
-                    }
-                }
-                BluetoothDevice.ACTION_ACL_DISCONNECTED -> {
-                    if (deviceName == savedName) {
-                        CrashLogger.log(this@LocationService, "BT", "Bluetooth desconnectat: $deviceName - esperant debounce")
-                        prefs.edit().putBoolean("bluetooth_car_connected", false).apply()
-                        showBluetoothStatusNotification(deviceName, false)
-                        scheduleDisconnectSave(deviceName)
-                    }
-                }
+        CrashLogger.log(this, "BT", "Event BT ($source): action=$action, device=$deviceName, saved=$savedName")
+
+        if (savedName.isNullOrEmpty() || deviceName == null || deviceName != savedName) return
+
+        val key = "$action:$deviceName"
+        val now = System.currentTimeMillis()
+        if (key == lastHandledBtKey && now - lastHandledBtAt < BT_EVENT_DEDUP_WINDOW_MS) {
+            CrashLogger.log(this, "BT", "Event BT duplicat ignorat ($source): $key")
+            return
+        }
+        lastHandledBtKey = key
+        lastHandledBtAt = now
+
+        when (action) {
+            BluetoothDevice.ACTION_ACL_CONNECTED -> {
+                cancelPendingDisconnectSave(deviceName, "reconnexió detectada")
+                CrashLogger.log(this, "BT", "Bluetooth connectat: $deviceName")
+                prefs.edit().putBoolean("bluetooth_car_connected", true).apply()
+                showBluetoothStatusNotification(deviceName, true)
+            }
+            BluetoothDevice.ACTION_ACL_DISCONNECTED -> {
+                CrashLogger.log(this, "BT", "Bluetooth desconnectat: $deviceName - esperant debounce")
+                prefs.edit().putBoolean("bluetooth_car_connected", false).apply()
+                showBluetoothStatusNotification(deviceName, false)
+                scheduleDisconnectSave(deviceName)
             }
         }
     }
@@ -144,6 +177,15 @@ class LocationService : Service(), LocationListener {
         }
 
         startLocationUpdates()
+
+        // Si ens han despertat des del receiver del manifest amb un esdeveniment BT,
+        // processem-lo ara (el receiver dinàmic no l'haurà rebut perquè s'ha registrat
+        // després que es difongués la difusió).
+        val btAction = intent?.getStringExtra(EXTRA_BT_ACTION)
+        if (btAction != null) {
+            handleBluetoothEvent(btAction, intent.getStringExtra(EXTRA_BT_DEVICE), "receiver del manifest")
+        }
+
         return START_STICKY
     }
 
@@ -538,12 +580,16 @@ class LocationService : Service(), LocationListener {
         val triggerAtMillis = System.currentTimeMillis() + 30_000L
 
         try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            // A Android 12+ només una alarma EXACTA dóna l'exempció per iniciar un
+            // foreground service des de segon pla. Si no tenim permís per a alarmes
+            // exactes, recorrem a la inexacta (menys fiable, però no peta).
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !alarmManager.canScheduleExactAlarms()) {
                 alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAtMillis, pendingIntent)
+                CrashLogger.log(this, "SERVICE", "Sense permís d'alarmes exactes; reinici amb alarma inexacta (menys fiable): $reason")
             } else {
-                alarmManager.set(AlarmManager.RTC_WAKEUP, triggerAtMillis, pendingIntent)
+                alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAtMillis, pendingIntent)
+                CrashLogger.log(this, "SERVICE", "Reinici del servei programat en ~30s (alarma exacta): $reason")
             }
-            CrashLogger.log(this, "SERVICE", "Reinici del servei programat en ~30s: $reason")
         } catch (e: SecurityException) {
             CrashLogger.logError(this, "SERVICE", "Android no permet programar el reinici del servei", e)
         } catch (e: RuntimeException) {
